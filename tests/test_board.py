@@ -1,50 +1,5 @@
 import unittest
-
-class Board:
-    def __init__(self):
-        self.__casillas__ = [
-            ['white','white'], #0
-            [], #1
-            [], #2
-            [], #3
-            [], #4
-            ['black', 'black', 'black', 'black', 'black'], #5
-            #--------------------------------------------
-            [], #6
-            ['black', 'black', 'black'], #7
-            [], #8
-            [], #9
-            [], #10
-            ['white', 'white', 'white', 'white', 'white'], #11
-            #--------------------------------------------
-            ['black', 'black', 'black', 'black', 'black'], #12
-            [], #13
-            [], #14
-            [], #15
-            ['white', 'white', 'white'], #16
-            [], #17
-            #--------------------------------------------
-            ['white', 'white', 'white', 'white', 'white'], #18
-            [], #19
-            [], #20
-            [], #21
-            [], #22
-            ['black', 'black'], #23
-        ] #Definimos el tablero general de 24 casillas como una lista
-
-        self.__banco__ = {"white": [], "black": []} #Lugar donde guardamos las fichas comidas
-
-        self.__home__ = {"white": [], "black": []} #Lugar donde guardamos las fichas al finalizar el juego
-    
-    def remover_checker(self, punto: int):
-        if punto < 0 or punto > 23:
-            raise ValueError("punto inválido")
-        elif not self.__casillas__[punto]:
-            raise ValueError("No hay ficha en esta casilla")
-        return self.__casillas__[punto].pop()
-    
-
-#-----------------TESTS--------------------------
+from core.board import Board
 
 class TestBoard(unittest.TestCase):
 
@@ -106,27 +61,68 @@ class TestBoard(unittest.TestCase):
         self.assertEqual(color, 'white')
         self.assertEqual(len(self.board.__casillas__[0]), 1)
     
-    def tet_remove_checker_casilla_vacia(self):
+    def test_remove_checker_casilla_vacia(self):
         self.board = Board()
         self.board.remover_checker(0)
         self.board.remover_checker(0)
-        self.assertEqual(len(self.board.__casillas__[0]), [])
+        self.assertEqual(len(self.board.__casillas__[0]), 0)
     
-    def tet_remove_checker_casilla_vacia_error(self):
+    def test_remove_checker_casilla_vacia_error(self):
         self.board = Board()
         with self.assertRaises(ValueError):
             self.board.remover_checker(1)
     
-    def tet_remove_checker_casilla_fuera_rango(self):
+    def test_remove_checker_casilla_fuera_rango(self):
         self.board = Board()
         with self.assertRaises(ValueError):
             self.board.remover_checker(24)
     
-    def tet_remove_checker_casilla_negativa(self):
+    def test_remove_checker_casilla_negativa(self):
         self.board = Board()
         with self.assertRaises(ValueError):
             self.board.remover_checker(-1)
-        
+    
+    def test_move_checker_valido(self):
+        self.board = Board()
+        origen, destino = 0, 2
+        self.board.mover_checker(0, 2)
+        self.assertEqual(self.board.__casillas__[origen], ['white'])
+        self.assertEqual(self.board.__casillas__[destino], ['white'])
+    
+    def test_mover_checker_mismo_color(self):
+        self.board = Board()
+        self.board.__casillas__[0] = ['white']
+        self.board.__casillas__[2] = ['white', 'white']
+        self.board.mover_checker(0, 2)
+        self.assertEqual(self.board.__casillas__[2], ['white', 'white', 'white'])
+
+    def test_mover_checker_comer_ficha(self):
+        self.board = Board()
+        self.board.__casillas__[0] = ['white']
+        self.board.__casillas__[3] = ['black']
+        self.board.mover_checker(0, 3)
+
+        self.assertEqual(self.board.__casillas__[3], ['white']) #Ficha blanca come a ficha negra
+        self.assertEqual(self.board.__banco__['black'], ['black']) #Ficha negra se agrega al banco
+
+    def test_mover_checker_bloqueado(self):
+        self.board = Board()
+        self.board.__casillas__[0] = ['white']
+        self.board.__casillas__[4] = ['black', 'black']
+        with self.assertRaises(ValueError):
+            self.board.mover_checker(0, 4)
+
+    def test_mover_checker_destino_invalido(self):
+        self.board = Board()
+        with self.assertRaises(ValueError):
+            self.board.mover_checker(0, -1)
+        with self.assertRaises(ValueError):
+            self.board.mover_checker(0, 24)
+
+    def test_mover_checker_origen_vacio(self):
+        self.board = Board()
+        with self.assertRaises(ValueError):
+            self.board.mover_checker(2, 5)
 
 if __name__ == '__main__':
     unittest.main()
