@@ -35,53 +35,98 @@ class Board:
         self.__banco__ = {"white": [], "black": []} #Lugar donde guardamos las fichas comidas
 
         self.__home__ = {"white": [], "black": []} #Lugar donde guardamos las fichas al finalizar el juego
+    
+    def remover_checker(self, punto: int):
+        if punto < 0 or punto > 23:
+            raise ValueError("punto inválido")
+        elif not self.__casillas__[punto]:
+            raise ValueError("No hay ficha en esta casilla")
+        return self.__casillas__[punto].pop()
+    
 
-class TestBoardInitialization(unittest.TestCase):
+#-----------------TESTS--------------------------
 
-    def setUp(self):
-        self.board = Board()
+class TestBoard(unittest.TestCase):
 
     def test_tablero_tiene_24_casillas(self):
-        """El tablero debe tener exactamente 24 casillas"""
+        self.board = Board()
+        #El tablero debe tener exactamente 24 casillas
         self.assertEqual(len(self.board.__casillas__), 24)
 
     def test_configuracion_inicial_casilla_0(self):
-        """La casilla 0 debe comenzar con 2 fichas blancas"""
+        self.board = Board()
+        #La casilla 0 debe comenzar con 2 fichas blancas
         self.assertEqual(self.board.__casillas__[0], ['white','white'])
 
     def test_configuracion_inicial_casilla_5(self):
-        """La casilla 5 debe comenzar con 5 fichas negras"""
+        self.board = Board()
+        #La casilla 5 debe comenzar con 5 fichas negras
         self.assertEqual(self.board.__casillas__[5], ['black']*5)
 
     def test_configuracion_inicial_casilla_11(self):
-        """La casilla 11 debe comenzar con 5 fichas blancas"""
+        self.board = Board()
+        #La casilla 11 debe comenzar con 5 fichas blancas
         self.assertEqual(self.board.__casillas__[11], ['white']*5)
 
     def test_configuracion_inicial_casilla_12(self):
-        """La casilla 12 debe comenzar con 5 fichas negras"""
+        self.board = Board()
+        #La casilla 12 debe comenzar con 5 fichas negras
         self.assertEqual(self.board.__casillas__[12], ['black']*5)
 
     def test_configuracion_inicial_casilla_16(self):
-        """La casilla 16 debe comenzar con 3 fichas blancas"""
+        self.board = Board()
+        #La casilla 16 debe comenzar con 3 fichas blancas
         self.assertEqual(self.board.__casillas__[16], ['white']*3)
 
     def test_configuracion_inicial_casilla_18(self):
-        """La casilla 18 debe comenzar con 5 fichas blancas"""
+        self.board = Board()
+        #La casilla 18 debe comenzar con 5 fichas blancas
         self.assertEqual(self.board.__casillas__[18], ['white']*5)
 
     def test_configuracion_inicial_casilla_23(self):
-        """La casilla 23 debe comenzar con 2 fichas negras"""
+        self.board = Board()
+        #La casilla 23 debe comenzar con 2 fichas negras
         self.assertEqual(self.board.__casillas__[23], ['black']*2)
 
     def test_banco_empieza_vacio(self):
-        """El banco debe empezar vacío para ambos colores"""
+        self.board = Board()
+        #El banco debe empezar vacío para ambos colores
         self.assertEqual(self.board.__banco__['white'], [])
         self.assertEqual(self.board.__banco__['black'], [])
 
     def test_home_empieza_vacio(self):
-        """El home debe empezar vacío para ambos colores"""
+        self.board = Board()
+        #El home debe empezar vacío para ambos colores
         self.assertEqual(self.board.__home__['white'], [])
         self.assertEqual(self.board.__home__['black'], [])
+    
+    def test_remove_checker_color_correcto(self):
+        self.board = Board()
+        color = self.board.remover_checker(0)
+        self.assertEqual(color, 'white')
+        self.assertEqual(len(self.board.__casillas__[0]), 1)
+    
+    def tet_remove_checker_casilla_vacia(self):
+        self.board = Board()
+        self.board.remover_checker(0)
+        self.board.remover_checker(0)
+        self.assertEqual(len(self.board.__casillas__[0]), [])
+    
+    def tet_remove_checker_casilla_vacia_error(self):
+        self.board = Board()
+        with self.assertRaises(ValueError):
+            self.board.remover_checker(1)
+    
+    def tet_remove_checker_casilla_fuera_rango(self):
+        self.board = Board()
+        with self.assertRaises(ValueError):
+            self.board.remover_checker(24)
+    
+    def tet_remove_checker_casilla_negativa(self):
+        self.board = Board()
+        with self.assertRaises(ValueError):
+            self.board.remover_checker(-1)
+        
 
 if __name__ == '__main__':
     unittest.main()
