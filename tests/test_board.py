@@ -124,5 +124,51 @@ class TestBoard(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.board.mover_checker(2, 5)
 
+    def test_consultar_checker_vacia(self):
+        self.board = Board()
+        self.assertEqual(self.board.consultar_checker(2), (None, 0))
+
+    def test_consultar_checker_con_fichas(self):
+        self.board = Board()
+        resultado = self.board.consultar_checker(0)
+        esperado = {f"En la posición {self.board.__casillas__[0]} hay 2 del color white"}
+        self.assertEqual(resultado, esperado)
+
+    def test_consultar_checker_otro_color(self):
+        self.board = Board()
+        resultado = self.board.consultar_checker(5)
+        esperado = {f"En la posición {self.board.__casillas__[5]} hay 5 del color black"}
+        self.assertEqual(resultado, esperado)
+
+    def test_estado_jugador_inicial_white(self):
+        self.board = Board()
+        resultado = self.board.estado_jugador("white")
+        en_tablero = sum(1 for punto in self.board.__casillas__ for ficha in punto if ficha == "white")
+        en_home = len(self.board.__home__["white"])
+        en_banco = len(self.board.__banco__["white"])
+        esperado = {f"Fichas de white: {en_tablero} en el tablero, {en_home} guardadas, {en_banco} comidas sin sacar"}
+        self.assertEqual(resultado, esperado)
+
+    def test_estado_jugador_inicial_black(self):
+        self.board = Board()
+        resultado = self.board.estado_jugador("black")
+        en_tablero = sum(1 for punto in self.board.__casillas__ for ficha in punto if ficha == "black")
+        en_home = len(self.board.__home__["black"])
+        en_banco = len(self.board.__banco__["black"])
+        esperado = {f"Fichas de black: {en_tablero} en el tablero, {en_home} guardadas, {en_banco} comidas sin sacar"}
+        self.assertEqual(resultado, esperado)
+
+    def test_estado_jugador_con_fichas_en_home_y_banco(self):
+        self.board = Board()
+        self.board.__home__["white"].extend(["white", "white"]) # agregamos 2 blancas al home y 1 blanca al banco
+        self.board.__banco__["white"].append("white")
+
+        resultado = self.board.estado_jugador("white")
+        en_tablero = sum(1 for punto in self.board.__casillas__ for ficha in punto if ficha == "white")
+        en_home = len(self.board.__home__["white"])
+        en_banco = len(self.board.__banco__["white"])
+        esperado = {f"Fichas de white: {en_tablero} en el tablero, {en_home} guardadas, {en_banco} comidas sin sacar"}
+        self.assertEqual(resultado, esperado)
+
 if __name__ == '__main__':
     unittest.main()

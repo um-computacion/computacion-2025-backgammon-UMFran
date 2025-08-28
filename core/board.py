@@ -57,3 +57,16 @@ class Board:
             self.__banco__[enemigo].append(enemigo)
         
         return self.__casillas__[destino].append(ficha) #Agregamos la ficha a la casilla
+    
+    def consultar_checker(self, punto: int):
+
+        if not self.__casillas__[punto]: #En caso que no haya ninguna ficha
+            return None, 0
+        return {f"En la posición {self.__casillas__[punto]} hay {len(self.__casillas__[punto])} del color {self.__casillas__[punto][0]}"} #Nos devuelve el estado de la casilla
+    
+    def estado_jugador(self, color: str):
+        en_tablero = sum(1 for punto in self.__casillas__ for ficha in punto if ficha == color) #Cuenta fichas en el tablero
+        en_home = len(self.__home__[color]) #Cuenta fichas guardadas
+        en_banco = len(self.__banco__[color]) #Cuenta fichas comidas sin sacar
+
+        return {f"Fichas de {color}: {en_tablero} en el tablero, {en_home} guardadas, {en_banco} comidas sin sacar"}
