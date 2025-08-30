@@ -19,7 +19,7 @@ class Board:
             [], #13
             [], #14
             [], #15
-            ['white', 'white', 'white'], #16
+            ['white', 'white', 'white'], #16git branch
             [], #17
             #--------------------------------------------
             ['white', 'white', 'white', 'white', 'white'], #18
@@ -70,3 +70,9 @@ class Board:
         en_banco = len(self.__banco__[color]) #Cuenta fichas comidas sin sacar
 
         return {f"Fichas de {color}: {en_tablero} en el tablero, {en_home} guardadas, {en_banco} comidas sin sacar"}
+    
+    def get_banco(self, color: str):
+        return list(self.__banco__[color])
+
+    def get_home(self, color: str):
+        return list(self.__home__[color])
