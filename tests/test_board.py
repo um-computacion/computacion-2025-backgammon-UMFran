@@ -170,5 +170,37 @@ class TestBoard(unittest.TestCase):
         esperado = {f"Fichas de white: {en_tablero} en el tablero, {en_home} guardadas, {en_banco} comidas sin sacar"}
         self.assertEqual(resultado, esperado)
 
+    def test_get_banco_inicial_vacio(self):
+        self.board = Board()
+        self.assertEqual(self.board.get_banco("white"), [])
+        self.assertEqual(self.board.get_banco("black"), [])
+
+    def test_get_banco_con_fichas(self):
+        self.board = Board()
+        self.board.__banco__["white"].extend(["white", "white"])
+        self.assertEqual(self.board.get_banco("white"), ["white", "white"])
+
+    def test_get_banco_devuelve_copia(self):
+        self.board = Board()
+        resultado = self.board.get_banco("black")
+        resultado.append("black")
+        self.assertNotEqual(resultado, self.board.__banco__["black"])
+
+    def test_get_home_inicial_vacio(self):
+        self.board = Board()
+        self.assertEqual(self.board.get_home("white"), [])
+        self.assertEqual(self.board.get_home("black"), [])
+
+    def test_get_home_con_fichas(self):
+        self.board = Board()
+        self.board.__home__["black"].extend(["black", "black", "black"])
+        self.assertEqual(self.board.get_home("black"), ["black", "black", "black"])
+
+    def test_get_home_devuelve_copia(self):
+        self.board = Board()
+        resultado = self.board.get_home("white")
+        resultado.append("white")
+        self.assertNotEqual(resultado, self.board.__home__["white"])
+
 if __name__ == '__main__':
     unittest.main()
