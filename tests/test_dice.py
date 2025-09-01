@@ -22,3 +22,27 @@ class TestsDice(unittest.TestCase): #CONSULTAR EN CLASE!!!
         with patch("random.randint", side_effect=[6, 2]):
             self.dice.tirar_dados()
         self.assertEqual(self.dice.__movimientos__, [6, 2])
+
+    def test_get_dado(self):
+        self.dice = dice()
+        self.dice.__movimientos__ = [1, 3]
+        resultado = self.dice.get_dados()
+        self.assertEqual(resultado, [1, 3])
+
+    def test_usar_dado_valido(self):
+        self.dice = dice()
+        self.dice.__movimientos__ = [3, 5]
+        self.dice.usar_dado(3)
+        self.assertEqual(self.dice.__movimientos__, [5])
+
+    def test_usar_dado_invalido(self):
+        self.dice = dice()
+        self.dice.__movimientos__ = [2, 6]
+        with self.assertRaises(ValueError):
+            self.dice.usar_dado(4)
+
+    def test_usar_dado_con_dobles(self):
+        self.dice = dice()
+        self.dice.__movimientos__ = [4, 4, 4, 4]
+        self.dice.usar_dado(4)
+        self.assertEqual(self.dice.__movimientos__, [4, 4, 4])
