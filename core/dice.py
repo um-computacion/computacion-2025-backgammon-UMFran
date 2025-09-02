@@ -22,3 +22,12 @@ class dice:
             raise ValueError(f"El valor {valor} no se encuentra entre los generados")
         else:
             self.__movimientos__.remove(valor) #Elimina el valor usado por el jugador
+    
+    def hay_movimientos(self):
+        if len(self.__movimientos__)> 0: #Verifica que hay moivimientos 
+            return True
+        else:
+            return False
+    
+    def limpiar_dados(self): 
+        self.__movimientos__.clear() #Limpia la lista de movimientos
