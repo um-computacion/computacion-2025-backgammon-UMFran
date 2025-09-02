@@ -46,3 +46,19 @@ class TestsDice(unittest.TestCase): #CONSULTAR EN CLASE!!!
         self.dice.__movimientos__ = [4, 4, 4, 4]
         self.dice.usar_dado(4)
         self.assertEqual(self.dice.__movimientos__, [4, 4, 4])
+    
+    def test_hay_movimientos_true(self):
+        self.dice = dice()
+        self.dice.__movimientos__ = [3, 5]
+        self.assertTrue(self.dice.hay_movimientos())
+
+    def test_hay_movimientos_false(self):
+        self.dice = dice()
+        self.dice.__movimientos__ = []
+        self.assertFalse(self.dice.hay_movimientos())
+
+    def test_reset_vacia_lista(self):
+        self.dice = dice()
+        self.dice.__movimientos__ = [2, 6]
+        self.dice.limpiar_dados()
+        self.assertEqual(self.dice.__movimientos__, [])
