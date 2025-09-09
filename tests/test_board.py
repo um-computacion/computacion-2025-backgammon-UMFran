@@ -201,6 +201,68 @@ class TestBoard(unittest.TestCase):
         resultado = self.board.get_home("white")
         resultado.append("white")
         self.assertNotEqual(resultado, self.board.__home__["white"])
+    
+    def test_reingreso_normal(self):
+        self.board = Board()
+        self.board.__banco__["white"].append("white")
+        self.board.move_checker_banco("white", 2)
+        self.assertEqual(self.board.__casillas__[2], ["white"])
+        self.assertEqual(self.board.__banco__["white"], [])
+
+    def test_destino_invalido(self):
+        self.board = Board()
+        self.board.__banco__["white"].append("white")
+        with self.assertRaises(ValueError):
+            self.board.move_checker_banco("white", 30)
+
+    def test_casilla_bloqueada_por_enemigos(self):
+        self.board = Board()
+        self.board.__banco__["white"].append("white")
+        self.board.__casillas__[5] = ["black", "black"]  # casilla bloqueada
+        with self.assertRaises(ValueError):
+            self.board.move_checker_banco("white", 5)
+
+    def test_casilla_con_un_enemigo(self):
+        self.board = Board()
+        self.board.__banco__["white"].append("white")
+        self.board.__casillas__[7] = ["black"]  # un enemigo
+        self.board.move_checker_banco("white", 7)
+        self.assertEqual(self.board.__casillas__[7], ["white"])
+        self.assertEqual(self.board.__banco__["black"], ["black"])
+
+    def test_banco_vacio_no_hace_nada(self):
+        self.board = Board()
+        estado_inicial = [list(c) for c in self.board.__casillas__]
+        self.board.move_checker_banco("white", 3)  # no hay fichas en banco
+        self.assertEqual(self.board.__casillas__, estado_inicial)
+    
+    def test_sacar_ficha_valida(self):
+        self.board = Board()
+        resultado = self.board.sacar_ficha("white", 0)
+        self.assertTrue(resultado)
+        self.assertEqual(self.board.__home__["white"], ["white"])
+        self.assertEqual(self.board.__casillas__[0], ["white"])  # quedó una sola
+
+    def test_sacar_ficha_casilla_vacia(self):
+        self.board = Board()
+        resultado = self.board.sacar_ficha("white", 3)  # casilla 3 arranca vacía
+        self.assertFalse(resultado)
+        self.assertEqual(self.board.__home__["white"], [])
+
+    def test_sacar_ficha_color_incorrecto(self):
+        self.board = Board()
+        resultado = self.board.sacar_ficha("white", 5)
+        self.assertFalse(resultado)
+        self.assertEqual(self.board.__home__["white"], [])
+        self.assertEqual(self.board.__casillas__[5], ["black"]*5)
+
+    def test_sacar_ficha_modifica_home_y_tablero(self):
+        self.board = Board()
+        cantidad_inicial = len(self.board.__casillas__[0])
+        self.board.sacar_ficha("white", 0)
+        self.assertEqual(len(self.board.__casillas__[0]), cantidad_inicial - 1)
+        self.assertEqual(self.board.__home__["white"], ["white"])
+
 
 if __name__ == '__main__':
     unittest.main()
