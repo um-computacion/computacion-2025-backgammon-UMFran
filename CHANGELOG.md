@@ -106,3 +106,5 @@
 ### Changed
 
 - CHANGELOG.md
+- core/board.py
+- tests/test_board.py

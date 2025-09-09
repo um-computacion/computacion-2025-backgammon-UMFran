@@ -58,8 +58,31 @@ class Board:
         
         return self.__casillas__[destino].append(ficha) #Agregamos la ficha a la casilla
     
-    def consultar_checker(self, punto: int):
+    def move_checker_banco(self, color: str, destino:int):
+        if self.__banco__[color] != []:
+            ficha = self.__banco__[color].pop()
+            if destino < 0 or destino > 23:
+                raise ValueError("Punto inválido") #Validamos que el destino esté entre los puntos válidos
 
+            if self.__casillas__[destino] and self.__casillas__[destino][0] != ficha and len(self.__casillas__[destino]) > 1:
+                raise ValueError("Punto inválido, hay más de 1 ficha de otro color")
+
+            if self.__casillas__[destino] and self.__casillas__[destino][0] != ficha and len(self.__casillas__[destino]) == 1: #Comemos la ficha enemiga si es posible
+                enemigo = self.__casillas__[destino].pop()
+                self.__banco__[enemigo].append(enemigo)
+            
+            return self.__casillas__[destino].append(ficha)
+        else:
+            raise ValueError("No hay fichas en el banco")
+
+    def sacar_ficha(self, color: str, origen: int):
+        if self.__casillas__[origen] and self.__casillas__[origen][-1] == color:
+            ficha = self.__casillas__[origen].pop()
+            self.__home__[color].append(ficha)
+            return True
+        return False
+
+    def consultar_checker(self, punto: int):
         if not self.__casillas__[punto]: #En caso que no haya ninguna ficha
             return None, 0
         return {f"En la posición {self.__casillas__[punto]} hay {len(self.__casillas__[punto])} del color {self.__casillas__[punto][0]}"} #Nos devuelve el estado de la casilla
