@@ -9,3 +9,11 @@ class Checker:
     def obtener_posicion(self):
         return self.__posicion__
     
+    def posicion_nueva(self, nueva_posicion):
+        return self.__posicion__ == nueva_posicion
+    
+    def esta_banco(self):
+        return self.__posicion__ == "banco"
+    
+    def esta_home(self):
+        return self.__posicion__ == "home"
