@@ -108,3 +108,15 @@
 - CHANGELOG.md
 - core/board.py
 - tests/test_board.py
+
+## [1.2.1] - 2025-09-09
+
+### Added
+
+- player/mostrar_fichas
+- player/obtener_nombre
+- player/obtener_color
+- player/ganar
+- player/restar_ficha
+- player/__str__
+- tests/test_player.py
