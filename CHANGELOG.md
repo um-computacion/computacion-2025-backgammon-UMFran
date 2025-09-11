@@ -120,3 +120,9 @@
 - player/restar_ficha
 - player/__str__
 - tests/test_player.py
+- checket/obtener_color
+- checket/obtener_posicion
+- checket/posicion_nueva
+- checket/esta_banco
+- checket/esta_home
+- tests/test_checker.py
