@@ -126,3 +126,17 @@
 - checket/esta_banco
 - checket/esta_home
 - tests/test_checker.py
+
+## [1.2.1] - 2025-09-15
+
+### Added
+
+- backgammongame/__init__
+- backgammongame/mostrar_jugador1
+- backgammongame/mostrar_jugador2
+- backgammongame/mostrar_turno
+- tests/test_game.py
+
+### Changed
+
+- tests/test_board.py

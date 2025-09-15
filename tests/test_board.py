@@ -230,11 +230,10 @@ class TestBoard(unittest.TestCase):
         self.assertEqual(self.board.__casillas__[7], ["white"])
         self.assertEqual(self.board.__banco__["black"], ["black"])
 
-    def test_banco_vacio_no_hace_nada(self):
+    def test_banco_vacio_lanza_error(self):
         self.board = Board()
-        estado_inicial = [list(c) for c in self.board.__casillas__]
-        self.board.move_checker_banco("white", 3)  # no hay fichas en banco
-        self.assertEqual(self.board.__casillas__, estado_inicial)
+        with self.assertRaises(ValueError):
+            self.board.move_checker_banco("white", 3)
     
     def test_sacar_ficha_valida(self):
         self.board = Board()
