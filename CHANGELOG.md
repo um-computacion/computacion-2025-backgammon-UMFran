@@ -144,3 +144,4 @@
 ### Changed
 
 - tests/test_board.py
+- README.md
