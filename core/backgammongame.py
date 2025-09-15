@@ -23,6 +23,9 @@ class backgammongame:
     def mostrar_turno(self):
         return self.__turno__.obtener_nombre()
     
+    def mostrar_tablero(self):
+        return self.__board__
+    
 #Funciones de dados
 
     def tirar_dados(self):

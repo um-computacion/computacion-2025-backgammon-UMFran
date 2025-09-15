@@ -40,6 +40,12 @@ class TestBackgammonGameBasico(unittest.TestCase):
         self.game = backgammongame("Fran", "Maria")
         self.assertEqual(self.game.mostrar_turno(), "Fran")
     
+    def test_mostrar_tablero(self):
+        self.game = backgammongame("Fran", "Maria")
+        tablero = self.game.mostrar_tablero()
+        self.assertIsInstance(tablero, Board)
+        self.assertIs(tablero, self.game.__board__)
+    
     def test_cambiar_turno_rama_if(self):
         self.game = backgammongame("Fran", "Maria")
         self.game.cambiar_turno()
