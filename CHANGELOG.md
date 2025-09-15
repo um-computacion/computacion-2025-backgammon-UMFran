@@ -135,6 +135,10 @@
 - backgammongame/mostrar_jugador1
 - backgammongame/mostrar_jugador2
 - backgammongame/mostrar_turno
+- backgammongame/tirar_dados
+- backgammongame/cambiar_turno
+- backgammongame/ganador
+- backgammongame/juego_terminado
 - tests/test_game.py
 
 ### Changed
