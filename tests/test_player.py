@@ -42,6 +42,14 @@ class TestPlayer(unittest.TestCase):
         self.jugador.__fichas_restantes__ = 0
         resultado = self.jugador.restar_ficha()
         self.assertFalse(resultado)
+    
+    def test_resetear_fichas(self):
+        player = Player("Fran", "white")
+        for _ in range(5):
+            player.restar_ficha()
+        self.assertLess(player.mostrar_fichas(), 15)
+        player.resetear_fichas()
+        self.assertEqual(player.mostrar_fichas(), 15)
 
     def test_str(self):
         self.jugador = Player("Fran", "white")

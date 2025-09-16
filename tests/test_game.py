@@ -97,3 +97,101 @@ class TestBackgammonGameBasico(unittest.TestCase):
         self.game.__jugador2__.__fichas_restantes__ = 5
         self.assertFalse(self.game.juego_terminado())
         self.assertIsNone(self.game.ganador())
+
+    # -------------------
+    # Funciones de dados
+    # -------------------
+    @patch("random.randint", side_effect=[3, 5])
+    def test_tirar_dados(self, mock_randint):
+        self.game = backgammongame("Fran", "Maria")
+        dados = self.game.tirar_dados()
+        self.assertEqual(dados, [3, 5])
+        self.assertTrue(all(1 <= d <= 6 for d in dados))
+
+    @patch("random.randint", side_effect=[2, 2])
+    def test_tirar_dados_dobles(self, mock_randint):
+        self.game = backgammongame("Fran", "Maria")
+        dados = self.game.tirar_dados()
+        self.assertEqual(dados, [2, 2, 2, 2])
+
+    def test_mover_valido(self):
+        self.game = backgammongame("Fran", "Maria")
+        self.game.__dados__.__movimientos__ = [3]
+        origen, destino = 0, 3
+        self.game.__board__.__casillas__[0] = ["white"]
+        self.game.mover(origen, destino)
+        self.assertIn("white", self.game.__board__.__casillas__[3])
+
+    def test_mover_invalido_lanza_error(self):
+        self.game = backgammongame("Fran", "Maria")
+        self.game.__dados__.__movimientos__ = [2]
+        with self.assertRaises(ValueError):
+            self.game.mover(0, 3)
+
+    def test_reingresar_valido(self):
+        self.game = backgammongame("Fran", "Maria")
+        self.game.__dados__.__movimientos__ = [2]
+        self.game.__turno__.__color__ = "white"
+        self.game.__board__.__banco__["white"] = ["white"]
+        self.game.reingresar_ficha(1)  # destino=1 -> movimiento=2
+        self.assertIn("white", self.game.__board__.__casillas__[1])
+
+    def test_reingresar_invalido(self):
+        self.game = backgammongame("Fran", "Maria")
+        self.game.__dados__.__movimientos__ = [5]
+        with self.assertRaises(ValueError):
+            self.game.reingresar_ficha(1)
+
+    def test_sacar_valido(self):
+        self.game = backgammongame("Fran", "Maria")
+        self.game.__dados__.__movimientos__ = [6]
+        self.game.__turno__.__color__ = "black"
+        self.game.__board__.__casillas__ = [[] for _ in range(24)]
+        self.game.__board__.__casillas__[5] = ["black"]
+        resultado = self.game.sacar(5)
+        self.assertTrue(resultado)
+        self.assertIn("black", self.game.__board__.__home__["black"])
+
+    def test_sacar_fuera_cuadrante(self):
+        self.game = backgammongame("Fran", "Maria")
+        self.game.__dados__.__movimientos__ = [6]
+        self.game.__turno__.__color__ = "white"
+        # Blancas con ficha fuera del cuadrante final
+        self.game.__board__.__casillas__[0] = ["white"]
+        with self.assertRaises(ValueError):
+            self.game.sacar(0)
+
+    def test_sacar_dado_invalido(self):
+        self.game = backgammongame("Fran", "Maria")
+        self.game.__dados__.__movimientos__ = [3]
+        self.game.__turno__.__color__ = "black"
+        self.game.__board__.__casillas__[5] = ["black"]
+        with self.assertRaises(ValueError):
+            self.game.sacar(5)
+
+    # -------------------
+    # Funciones de turno
+    # -------------------
+    def test_cambiar_turno(self):
+        self.game = backgammongame("Fran", "Maria")
+        turno_inicial = self.game.__turno__
+        self.game.cambiar_turno()
+        self.assertNotEqual(self.game.__turno__, turno_inicial)
+
+    def test_finalizar_turno_con_dados(self):
+        self.game = backgammongame("Fran", "Maria")
+        self.game.__dados__.__movimientos__ = [3]
+        self.game.finalizar_turno()
+        self.assertFalse(self.game.__turno_finalizado__)
+
+    def test_finalizar_turno_sin_dados(self):
+        self.game = backgammongame("Fran", "Maria")
+        self.game.__dados__.__movimientos__ = []
+        self.game.finalizar_turno()
+        self.assertTrue(self.game.__turno_finalizado__)
+
+    def test_estado_turno(self):
+        self.game = backgammongame("Fran", "Maria")
+        estado = self.game.estado_turno()
+        self.assertIsInstance(estado, set)
+        self.assertTrue(any("Fichas" in s for s in estado))
