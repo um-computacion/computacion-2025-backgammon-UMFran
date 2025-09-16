@@ -195,3 +195,62 @@ class Dice:
     "
     Se utiliza el código dado
     core/dice.py
+
+Prompt:
+    "dame la funcion para mover las fichas en backgammongame pero usando el código que te pase no uses funciones nuevas"
+
+Respuesta:
+    "
+    def mover(self, origen: int, destino: int):
+        movimiento = abs(destino - origen)
+
+        # Validar que el movimiento exista en los dados tirados
+        if movimiento not in self.__dados__.get_dados():
+            raise ValueError(f"Movimiento {movimiento} no está disponible en los dados {self.__dados__.get_dados()}")
+
+        # Mover ficha en el tablero
+        self.__board__.mover_checker(origen, destino)
+
+        # Consumir el dado usado
+        self.__dados__.usar_dado(movimiento)
+
+    "
+    Se utiliza el código dado
+    core/backgammongame.py
+
+Prompt:
+    "en este caso tiene que corroborar que todas las fichas esten en el ultimo cuadrante dependiendo el color, acordate que van en sentido contrario el blanco con el negro"
+
+Respuesta:
+    "
+    def sacar(self, origen: int):
+        color = self.__turno__.obtener_color()
+
+        if color == "white":
+            fichas_fuera_cuadrante = any(
+                color in punto for i, punto in enumerate(self.__board__.mostrar_tablero()) if i < 18
+            )
+        else:  # black
+            fichas_fuera_cuadrante = any(
+                color in punto for i, punto in enumerate(self.__board__.mostrar_tablero()) if i > 5
+            )
+
+        if fichas_fuera_cuadrante:
+            raise ValueError(f"El jugador {color} no puede sacar fichas: todavía tiene piezas fuera de su cuadrante final")
+
+        # Calcular el valor necesario para sacar
+        movimiento = 24 - origen if color == "white" else origen + 1
+
+        # Validar dado
+        if movimiento not in self.__dados__.get_dados():
+            raise ValueError(f"No puedes sacar desde {origen}, el valor {movimiento} no está en los dados {self.__dados__.get_dados()}")
+
+        # Intentar sacar ficha
+        if self.__board__.sacar_ficha(color, origen):
+            self.__turno__.restar_ficha()
+            self.__dados__.usar_dado(movimiento)
+            return True
+        return False
+    "
+    Se utiliza el código dado
+    core/backgammongame.py

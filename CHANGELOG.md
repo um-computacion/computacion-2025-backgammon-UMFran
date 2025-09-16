@@ -127,7 +127,7 @@
 - checket/esta_home
 - tests/test_checker.py
 
-## [1.2.1] - 2025-09-15
+## [1.2.2] - 2025-09-15
 
 ### Added
 
@@ -145,3 +145,21 @@
 
 - tests/test_board.py
 - README.md
+
+## [1.2.2] - 2025-09-16
+
+### Added
+
+- backgammongame/mover
+- backgammongame/reingresar_ficha
+- backgammongame/sacar
+- backgammongame/finalizar_turno
+- backgammongame/estado_turno
+- player/resetear_fichas
+- tests/test_game.py
+
+### Changed
+
+- backgammongame/cambiar_turno
+- tests/test_game.py
+- tests/test_player.py

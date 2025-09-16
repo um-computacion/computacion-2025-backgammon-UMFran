@@ -29,5 +29,8 @@ class Player:
         else: 
             return False
     
+    def resetear_fichas(self):
+        self.__fichas_restantes__ = self.__fichas__
+    
     def __str__(self):
         return (f"El jugador: {self.__nombre__}, tiene color: {self.__color__} y le quedan {self.__fichas_restantes__} fichas")
