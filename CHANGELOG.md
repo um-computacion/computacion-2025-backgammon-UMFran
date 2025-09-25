@@ -163,3 +163,16 @@
 - backgammongame/cambiar_turno
 - tests/test_game.py
 - tests/test_player.py
+
+## [1.3.1] - 2025-09-24
+
+### Added
+
+- cli/__init__
+- cli/iniciar_juego
+- tests/test_cli.py
+
+### Changed
+
+- CHANGELOG
+- prompts-testing.md
