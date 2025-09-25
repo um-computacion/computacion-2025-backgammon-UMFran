@@ -98,7 +98,7 @@ class backgammongame:
         color = self.__turno__.obtener_color()
         return self.__board__.estado_jugador(color)
 
-#Funciones para ganar
+    #Funciones para ganar
     def ganador(self):
         for jugador in self.__jugadores__: #Revisa la lista de jugadores
             if jugador.ganar(): #Corrobora condición de ganar
