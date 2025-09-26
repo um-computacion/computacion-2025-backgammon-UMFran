@@ -183,7 +183,20 @@
 
 - cli/jugar_turno
 - cli/mostrar_banco
+- cli/mostar_home
 
 ### Changed
 
+- tests/test_cli.py
+
+## [1.3.3] - 2025-09-26
+
+### Added
+
+- cli/mostrar_estado_completo
+- cli/mostrar_movimientos:posibles
+
+### Changed
+
+- cli/jugar_turno
 - tests/test_cli.py
