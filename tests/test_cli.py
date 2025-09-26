@@ -47,7 +47,60 @@ class TestCLI(unittest.TestCase):
         self.assertEqual(("=====================================",), llamadas[0][0])
         # dados disponibles
         self.assertTrue(any("Dados disponibles:" in str(a) for a in [args[0] for args in llamadas]))
-    
+
+    @patch("builtins.print")
+    def test_mostrar_banco_con_fichas_blancas_y_negras(self, mock_print):
+        self.interfaz = cli("Fran", "Maria")
+        self.juego = self.interfaz.__game__
+        self.juego.__board__.__banco__["white"].extend(["white", "white"])
+        self.juego.__board__.__banco__["black"].extend(["black", "black", "black"])
+        
+        self.interfaz.mostrar_banco()
+        
+        mock_print.assert_any_call("\nFICHAS CAPTURADAS:")
+        mock_print.assert_any_call("  Blancas: 2")
+        mock_print.assert_any_call("  Negras: 3")
+
+    @patch("builtins.print")
+    def test_mostrar_banco_solo_fichas_blancas(self, mock_print):
+        self.interfaz = cli("Fran", "Maria")
+        self.juego = self.interfaz.__game__
+        self.juego.__board__.__banco__["white"].extend(["white", "white", "white"])
+        self.interfaz.mostrar_banco()
+        mock_print.assert_any_call("\nFICHAS CAPTURADAS:")
+        mock_print.assert_any_call("  Blancas: 3")
+        mock_print.assert_any_call("  Negras: 0")
+
+    @patch("builtins.print")
+    def test_mostrar_banco_solo_fichas_negras(self, mock_print):
+        self.interfaz = cli("Fran", "Maria")
+        self.juego = self.interfaz.__game__
+        self.juego.__board__.__banco__["black"].extend(["black"])
+        self.interfaz.mostrar_banco()
+        mock_print.assert_any_call("\nFICHAS CAPTURADAS:")
+        mock_print.assert_any_call("  Blancas: 0")
+        mock_print.assert_any_call("  Negras: 1")
+
+    @patch("builtins.print")
+    def test_mostrar_banco_vacio(self, mock_print):
+        self.interfaz = cli("Fran", "Maria")
+        self.juego = self.interfaz.__game__
+        self.juego.__board__.__banco__["white"].clear()
+        self.juego.__board__.__banco__["black"].clear()
+        self.interfaz.mostrar_banco()
+        mock_print.assert_not_called()
+
+    @patch("builtins.print")
+    def test_mostrar_banco_muchas_fichas(self, mock_print):
+        self.interfaz = cli("Fran", "Maria")
+        self.juego = self.interfaz.__game__
+        self.juego.__board__.__banco__["white"].extend(["white"] * 10)
+        self.juego.__board__.__banco__["black"].extend(["black"] * 15)
+        self.interfaz.mostrar_banco()
+        mock_print.assert_any_call("\nFICHAS CAPTURADAS:")
+        mock_print.assert_any_call("  Blancas: 10")
+        mock_print.assert_any_call("  Negras: 15")
+
     @patch("builtins.input", side_effect=["4"])  
     def test_finalizar_turno(self, mock_input):
         """Debe finalizar turno con la opción 4"""
@@ -96,7 +149,7 @@ class TestCLI(unittest.TestCase):
             juego.mostrar_tablero()[i].clear()
         juego.mostrar_tablero()[23].append("white")
         juego.__dados__.__movimientos__ = [1]  # origen=23 -> movimiento=1
-        
+
         self.interfaz.jugar_turno()
 
         self.assertIn("white", juego.__board__.__home__["white"])
