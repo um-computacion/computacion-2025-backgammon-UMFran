@@ -177,11 +177,12 @@
 - CHANGELOG
 - prompts-testing.md
 
-## [1.3.1] - 2025-09-24
+## [1.3.2] - 2025-09-25
 
 ### Added
 
 - cli/jugar_turno
+- cli/mostrar_banco
 
 ### Changed
 

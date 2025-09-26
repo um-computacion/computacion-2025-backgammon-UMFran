@@ -20,6 +20,14 @@ class cli:
         print("Dados disponibles:", self.__game__.__dados__.get_dados())
         print("=====================================")
     
+    def mostrar_banco(self):
+        banco_white = self.__game__.__board__.get_banco("white")
+        banco_black = self.__game__.__board__.get_banco("black")
+        if banco_white or banco_black:
+            print(f"\nFICHAS CAPTURADAS:")
+            print(f"  Blancas: {len(banco_white)}")
+            print(f"  Negras: {len(banco_black)}")
+    
     def jugar_turno(self):
         self.mostrar_juego()
         while True:
@@ -34,7 +42,6 @@ class cli:
                 if opcion == "1":
                     origen = int(input("Origen: "))
                     destino = int(input("Destino: "))
-                    # Validación de dirección eliminada - se maneja en la lógica del juego
                     self.__game__.mover(origen, destino)
 
                 elif opcion == "2":
@@ -50,5 +57,7 @@ class cli:
                     break
                 else:
                     print("Opción inválida.")
+            except ValueError as e:
+                print("Error:", str(e))
             except Exception as e:
                 print("Error:", str(e))
