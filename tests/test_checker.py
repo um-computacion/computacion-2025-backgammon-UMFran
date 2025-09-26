@@ -41,3 +41,6 @@ class TestChecker(unittest.TestCase):
     def test_esta_home_false(self):
         ficha = Checker("black", 3)
         self.assertFalse(ficha.esta_home())
+
+if __name__ == "__main__":
+    unittest.main()

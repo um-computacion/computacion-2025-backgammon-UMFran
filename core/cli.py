@@ -51,7 +51,18 @@ class cli:
                     
                     if 0 <= destino <= 23:
                         print(f"  {i} → {destino} (usando dado {dado})")
-        
+    
+    def mostrar_estado_completo(self):
+        print("="*50)
+        print(f"BACKGAMMON - Turno de: {self.__game__.mostrar_turno()}")
+        print("="*50)
+        self.__game__.mostrar_tablero()
+        self.__game__.__dados__.get_dados()
+        self.__game__.__board__.estado_jugador("white")
+        self.__game__.__board__.estado_jugador("black")
+        self.mostrar_banco()
+        print("="*50)
+
     def jugar_turno(self):
         self.mostrar_juego()
         while True:

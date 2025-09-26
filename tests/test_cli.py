@@ -252,6 +252,42 @@ class TestCLI(unittest.TestCase):
         self.interfaz.mostrar_movimientos_posibles()
         mock_print.assert_any_call("\nMovimientos posibles para black:") # No debe haber llamadas con "1 → -2"
 
+    @patch("builtins.print")
+    def test_mostrar_estado_basico(self, mock_print):
+        self.interfaz = cli("Fran", "Maria")
+        self.juego = self.interfaz.__game__
+
+        self.interfaz.mostrar_estado_completo()
+
+        mock_print.assert_any_call("="*50)
+        mock_print.assert_any_call("BACKGAMMON - Turno de: Fran")
+        mock_print.assert_any_call("="*50)
+
+    @patch("builtins.print")
+    def test_mostrar_estado_llamadas_reales(self, mock_print):
+        self.interfaz = cli("Fran", "Maria")
+        self.juego = self.interfaz.__game__
+
+        self.juego.__dados__.__movimientos__ = [1, 2]
+        self.juego.__board__.__banco__["white"].append("white")
+
+        self.interfaz.mostrar_estado_completo()
+
+        mock_print.assert_any_call("="*50)
+        mock_print.assert_any_call("="*50)
+
+    @patch("builtins.print")
+    def test_mostrar_estado_con_fichas_en_home_y_banco(self, mock_print):
+        self.interfaz = cli("Fran", "Maria")
+        self.juego = self.interfaz.__game__
+
+        self.juego.__board__.__banco__["black"].append("black")
+        self.juego.__board__.__home__["white"].append("white")
+
+        self.interfaz.mostrar_estado_completo()
+        mock_print.assert_any_call("="*50)
+
+#===============================================================#
     @patch("builtins.input", side_effect=["4"])  
     def test_finalizar_turno(self, mock_input):
         """Debe finalizar turno con la opción 4"""
@@ -383,3 +419,6 @@ class TestCLI(unittest.TestCase):
         with patch("builtins.print") as mock_print:
             self.interfaz.jugar_turno()
             mock_print.assert_any_call("Opción inválida.")
+
+if __name__ == "__main__":
+    unittest.main()

@@ -55,3 +55,6 @@ class TestPlayer(unittest.TestCase):
         self.jugador = Player("Fran", "white")
         esperado = "El jugador: Fran, tiene color: white y le quedan 15 fichas"
         self.assertEqual(str(self.jugador), esperado)
+
+if __name__ == "__main__":
+    unittest.main()

@@ -62,3 +62,6 @@ class TestsDice(unittest.TestCase): #CONSULTAR EN CLASE!!!
         self.dice.__movimientos__ = [2, 6]
         self.dice.limpiar_dados()
         self.assertEqual(self.dice.__movimientos__, [])
+    
+if __name__ == "__main__":
+    unittest.main()
