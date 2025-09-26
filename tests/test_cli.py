@@ -153,6 +153,104 @@ class TestCLI(unittest.TestCase):
         mock_print.assert_any_call("\nFICHAS EN CASA:")
         mock_print.assert_any_call("  Blancas: 15")
         mock_print.assert_any_call("  Negras: 8")
+    
+    @patch("builtins.print")
+    def test_movimientos_posibles_fichas_blancas_con_dados(self, mock_print):
+        self.interfaz = cli("Fran", "Maria")
+        self.juego = self.interfaz.__game__
+        self.juego.__turno__ = self.juego.__jugador1__  # jugador blanco
+        self.juego.__dados__.__movimientos__ = [2, 3]
+
+        for i in range(24):
+            self.juego.mostrar_tablero()[i].clear()
+        self.juego.mostrar_tablero()[5].append("white")
+        
+        self.interfaz.mostrar_movimientos_posibles()
+
+        mock_print.assert_any_call("\nMovimientos posibles para white:")
+        mock_print.assert_any_call("  5 → 7 (usando dado 2)")
+        mock_print.assert_any_call("  5 → 8 (usando dado 3)")
+
+    @patch("builtins.print")
+    def test_movimientos_posibles_fichas_blancas_multiples_posiciones(self, mock_print):
+        self.interfaz = cli("Fran", "Maria")
+        self.juego = self.interfaz.__game__
+        self.juego.__turno__ = self.juego.__jugador1__
+        self.juego.__dados__.__movimientos__ = [1]
+        for i in range(24):
+            self.juego.mostrar_tablero()[i].clear()
+        self.juego.mostrar_tablero()[0].append("white")
+        self.juego.mostrar_tablero()[10].extend(["white", "white"])
+        
+        self.interfaz.mostrar_movimientos_posibles()
+
+        mock_print.assert_any_call("\nMovimientos posibles para white:")
+        mock_print.assert_any_call("  0 → 1 (usando dado 1)")
+        mock_print.assert_any_call("  10 → 11 (usando dado 1)")
+
+    @patch("builtins.print")
+    def test_movimientos_posibles_fichas_negras_con_dados(self, mock_print):
+        self.interfaz = cli("Fran", "Maria")
+        self.juego = self.interfaz.__game__
+        self.juego.__turno__ = self.juego.__jugador2__  # jugador negro
+        self.juego.__dados__.__movimientos__ = [1, 4]
+
+        for i in range(24):
+            self.juego.mostrar_tablero()[i].clear()
+        self.juego.mostrar_tablero()[20].append("black")
+        
+        self.interfaz.mostrar_movimientos_posibles()
+
+        mock_print.assert_any_call("\nMovimientos posibles para black:")
+        mock_print.assert_any_call("  20 → 19 (usando dado 1)")
+        mock_print.assert_any_call("  20 → 16 (usando dado 4)")
+
+    @patch("builtins.print")  
+    def test_movimientos_posibles_fichas_negras_multiples_posiciones(self, mock_print):
+        self.interfaz = cli("Fran", "Maria")
+        self.juego = self.interfaz.__game__
+        self.juego.__turno__ = self.juego.__jugador2__
+        self.juego.__dados__.__movimientos__ = [2]
+
+        for i in range(24):
+            self.juego.mostrar_tablero()[i].clear()
+        self.juego.mostrar_tablero()[15].append("black")
+        self.juego.mostrar_tablero()[23].extend(["black", "black"])
+        
+        self.interfaz.mostrar_movimientos_posibles()
+
+        mock_print.assert_any_call("\nMovimientos posibles para black:")
+        mock_print.assert_any_call("  15 → 13 (usando dado 2)")
+        mock_print.assert_any_call("  23 → 21 (usando dado 2)")
+    
+    @patch("builtins.print")
+    def test_movimientos_posibles_fichas_blancas_fuera_limite_superior(self, mock_print):
+        self.interfaz = cli("Fran", "Maria")
+        self.juego = self.interfaz.__game__
+        self.juego.__turno__ = self.juego.__jugador1__
+        self.juego.__dados__.__movimientos__ = [5]
+
+        for i in range(24):
+            self.juego.mostrar_tablero()[i].clear()
+        self.juego.mostrar_tablero()[22].append("white")  # 22 + 5 = 27 > 23
+        
+        self.interfaz.mostrar_movimientos_posibles()
+
+        mock_print.assert_any_call("\nMovimientos posibles para white:") # No debe haber llamadas con "22 → 27"
+
+    @patch("builtins.print")
+    def test_movimientos_posibles_fichas_negras_fuera_limite_inferior(self, mock_print):
+        self.interfaz = cli("Fran", "Maria")
+        self.juego = self.interfaz.__game__
+        self.juego.__turno__ = self.juego.__jugador2__
+        self.juego.__dados__.__movimientos__ = [3]
+
+        for i in range(24):
+            self.juego.mostrar_tablero()[i].clear()
+        self.juego.mostrar_tablero()[1].append("black")  # 1 - 3 = -2 < 0
+        
+        self.interfaz.mostrar_movimientos_posibles()
+        mock_print.assert_any_call("\nMovimientos posibles para black:") # No debe haber llamadas con "1 → -2"
 
     @patch("builtins.input", side_effect=["4"])  
     def test_finalizar_turno(self, mock_input):

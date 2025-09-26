@@ -35,6 +35,23 @@ class cli:
         print(f"  Blancas: {len(home_white)}")
         print(f"  Negras: {len(home_black)}")
     
+    def mostrar_movimientos_posibles(self):
+        dados = self.__game__.__dados__.get_dados()
+        color = self.__game__.__turno__.obtener_color()
+        tablero = self.__game__.mostrar_tablero()
+        
+        print(f"\nMovimientos posibles para {color}:")
+        for i, punto in enumerate(tablero):
+            if punto and punto[-1] == color:  # Si hay ficha del color actual
+                for dado in dados:
+                    if color == "white":
+                        destino = i + dado
+                    else:
+                        destino = i - dado
+                    
+                    if 0 <= destino <= 23:
+                        print(f"  {i} → {destino} (usando dado {dado})")
+        
     def jugar_turno(self):
         self.mostrar_juego()
         while True:
@@ -64,7 +81,5 @@ class cli:
                     break
                 else:
                     print("Opción inválida.")
-            except ValueError as e:
-                print("Error:", str(e))
             except Exception as e:
-                print("Error:", str(e))
+                print("Error:", e)
