@@ -176,3 +176,13 @@
 
 - CHANGELOG
 - prompts-testing.md
+
+## [1.3.1] - 2025-09-24
+
+### Added
+
+- cli/jugar_turno
+
+### Changed
+
+- tests/test_cli.py
