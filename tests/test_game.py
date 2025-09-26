@@ -195,3 +195,6 @@ class TestBackgammonGameBasico(unittest.TestCase):
         estado = self.game.estado_turno()
         self.assertIsInstance(estado, set)
         self.assertTrue(any("Fichas" in s for s in estado))
+
+if __name__ == "__main__":
+    unittest.main()
