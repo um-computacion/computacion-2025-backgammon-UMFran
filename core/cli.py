@@ -28,6 +28,13 @@ class cli:
             print(f"  Blancas: {len(banco_white)}")
             print(f"  Negras: {len(banco_black)}")
     
+    def mostrar_home(self):
+        home_white = self.__game__.__board__.get_home("white")
+        home_black = self.__game__.__board__.get_home("black")
+        print(f"\nFICHAS EN CASA:")
+        print(f"  Blancas: {len(home_white)}")
+        print(f"  Negras: {len(home_black)}")
+    
     def jugar_turno(self):
         self.mostrar_juego()
         while True:

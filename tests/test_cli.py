@@ -101,6 +101,59 @@ class TestCLI(unittest.TestCase):
         mock_print.assert_any_call("  Blancas: 10")
         mock_print.assert_any_call("  Negras: 15")
 
+    @patch("builtins.print")
+    def test_mostrar_home_con_fichas_blancas_y_negras(self, mock_print):
+        self.interfaz = cli("Fran", "Maria")
+        self.juego = self.interfaz.__game__
+        self.juego.__board__.__home__["white"].extend(["white", "white", "white"])
+        self.juego.__board__.__home__["black"].extend(["black", "black"])
+        self.interfaz.mostrar_home()
+        mock_print.assert_any_call("\nFICHAS EN CASA:")
+        mock_print.assert_any_call("  Blancas: 3")
+        mock_print.assert_any_call("  Negras: 2")
+
+    @patch("builtins.print")
+    def test_mostrar_home_solo_fichas_blancas(self, mock_print):
+        self.interfaz = cli("Fran", "Maria")
+        self.juego = self.interfaz.__game__
+        self.juego.__board__.__home__["white"].extend(["white", "white", "white", "white"])
+        self.interfaz.mostrar_home()
+        mock_print.assert_any_call("\nFICHAS EN CASA:")
+        mock_print.assert_any_call("  Blancas: 4")
+        mock_print.assert_any_call("  Negras: 0")
+
+    @patch("builtins.print")
+    def test_mostrar_home_solo_fichas_negras(self, mock_print):
+        self.interfaz = cli("Fran", "Maria")
+        self.juego = self.interfaz.__game__
+        self.juego.__board__.__home__["black"].extend(["black", "black", "black", "black", "black"])
+        self.interfaz.mostrar_home()
+        mock_print.assert_any_call("\nFICHAS EN CASA:")
+        mock_print.assert_any_call("  Blancas: 0")
+        mock_print.assert_any_call("  Negras: 5")
+
+    @patch("builtins.print")
+    def test_mostrar_home_vacio(self, mock_print):
+        self.interfaz = cli("Fran", "Maria")
+        self.juego = self.interfaz.__game__
+        self.juego.__board__.__home__["white"].clear()
+        self.juego.__board__.__home__["black"].clear()
+        self.interfaz.mostrar_home()
+        mock_print.assert_any_call("\nFICHAS EN CASA:")
+        mock_print.assert_any_call("  Blancas: 0")
+        mock_print.assert_any_call("  Negras: 0")
+
+    @patch("builtins.print")
+    def test_mostrar_home_todas_fichas_sacadas(self, mock_print):
+        self.interfaz = cli("Fran", "Maria")
+        self.juego = self.interfaz.__game__
+        self.juego.__board__.__home__["white"].extend(["white"] * 15)
+        self.juego.__board__.__home__["black"].extend(["black"] * 8)
+        self.interfaz.mostrar_home()
+        mock_print.assert_any_call("\nFICHAS EN CASA:")
+        mock_print.assert_any_call("  Blancas: 15")
+        mock_print.assert_any_call("  Negras: 8")
+
     @patch("builtins.input", side_effect=["4"])  
     def test_finalizar_turno(self, mock_input):
         """Debe finalizar turno con la opción 4"""
