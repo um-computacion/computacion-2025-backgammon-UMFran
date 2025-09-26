@@ -71,6 +71,11 @@ class cli:
             print("2. Reingresar ficha")
             print("3. Sacar ficha")
             print("4. Finalizar turno")
+            print("5. Mostrar banco")
+            print("6. Mostrar home")
+            print("7. Mostrar movimientos posibles")
+            print("8. Mostrar estado completo")
+
             opcion = input("Elija acción: ")
 
             try:
@@ -90,6 +95,19 @@ class cli:
                 elif opcion == "4":
                     self.__game__.finalizar_turno()
                     break
+
+                elif opcion == "5":
+                    self.mostrar_banco()
+
+                elif opcion == "6":
+                    self.mostrar_home()
+
+                elif opcion == "7":
+                    self.mostrar_movimientos_posibles()
+
+                elif opcion == "8":
+                    self.mostrar_estado_completo()
+
                 else:
                     print("Opción inválida.")
             except Exception as e:
