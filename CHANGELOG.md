@@ -200,3 +200,14 @@
 
 - cli/jugar_turno
 - tests/test_cli.py
+
+## [1.3.4] - 2025-09-26
+
+### Added
+
+- cli/mostrar_ganador
+
+### Changed
+
+- cli/jugar_turno
+- tests/test_cli.py

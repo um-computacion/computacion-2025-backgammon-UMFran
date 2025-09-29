@@ -286,6 +286,33 @@ class TestCLI(unittest.TestCase):
 
         self.interfaz.mostrar_estado_completo()
         mock_print.assert_any_call("="*50)
+    
+    @patch("builtins.input", side_effect=["9", "4"])  # Mostrar ganador y salir
+    @patch("builtins.print")
+    def test_menu_mostrar_ganador_jugador1(self, mock_print, mock_input):
+        interfaz = cli("Fran", "Maria")
+        interfaz.__game__.__jugador1__.__fichas_restantes__ = 0
+        interfaz.__game__.__jugador2__.__fichas_restantes__ = 5
+        interfaz.jugar_turno()
+        mock_print.assert_any_call("El ganador del juego es Fran")
+
+    @patch("builtins.input", side_effect=["9", "4"])  # Mostrar ganador y salir
+    @patch("builtins.print")
+    def test_menu_mostrar_ganador_jugador2(self, mock_print, mock_input):
+        interfaz = cli("Fran", "Maria")
+        interfaz.__game__.__jugador1__.__fichas_restantes__ = 5
+        interfaz.__game__.__jugador2__.__fichas_restantes__ = 0
+        interfaz.jugar_turno()
+        mock_print.assert_any_call("El ganador del juego es Maria")
+
+    @patch("builtins.input", side_effect=["9", "4"])  # Mostrar ganador y salir
+    @patch("builtins.print")
+    def test_menu_mostrar_ganador_sin_ganador(self, mock_print, mock_input):
+        interfaz = cli("Fran", "Maria")
+        interfaz.__game__.__jugador1__.__fichas_restantes__ = 5
+        interfaz.__game__.__jugador2__.__fichas_restantes__ = 5
+        interfaz.jugar_turno()
+        mock_print.assert_any_call("El juego no ha finalizado")
 
 #===============================================================#
 
@@ -383,7 +410,7 @@ class TestCLI(unittest.TestCase):
 
         mock_print.assert_any_call("Error:", unittest.mock.ANY)
 
-    @patch("builtins.input", side_effect=["9", "4"])
+    @patch("builtins.input", side_effect=["99", "4"])
     @patch("builtins.print")
     def test_opcion_invalida(self, mock_print, mock_input):
         interfaz = cli("Fran", "Maria")

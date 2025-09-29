@@ -62,6 +62,13 @@ class cli:
         self.__game__.__board__.estado_jugador("black")
         self.mostrar_banco()
         print("="*50)
+    
+    def mostrar_ganador(self):
+        ganador = self.__game__.ganador()
+        if ganador:
+            print(f"El ganador del juego es {ganador}")
+        else:
+            print("El juego no ha finalizado")
 
     def jugar_turno(self):
         self.mostrar_juego()
@@ -75,6 +82,7 @@ class cli:
             print("6. Mostrar home")
             print("7. Mostrar movimientos posibles")
             print("8. Mostrar estado completo")
+            print("9. Mostrar ganador")
 
             opcion = input("Elija acción: ")
 
@@ -107,8 +115,12 @@ class cli:
 
                 elif opcion == "8":
                     self.mostrar_estado_completo()
+                
+                elif opcion == "9":
+                    self.mostrar_ganador()
 
                 else:
                     print("Opción inválida.")
+
             except Exception as e:
                 print("Error:", e)
