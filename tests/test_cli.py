@@ -313,6 +313,21 @@ class TestCLI(unittest.TestCase):
         interfaz.__game__.__jugador2__.__fichas_restantes__ = 5
         interfaz.jugar_turno()
         mock_print.assert_any_call("El juego no ha finalizado")
+    
+    @patch("builtins.input", side_effect=["10", "Nuevo1", "Nuevo2", "4"])
+    @patch("builtins.print")
+    def test_menu_reiniciar_juego(self, mock_print, mock_input):
+        """Debe reiniciar el juego y pedir nuevamente los nombres"""
+        interfaz = cli("Fran", "Maria")
+        interfaz.jugar_turno()
+
+        # Verifica que se imprimió el mensaje de reinicio
+        mock_print.assert_any_call("El juego se reinició")
+
+        # Verifica que los jugadores realmente cambiaron
+        self.assertEqual(interfaz.__game__.__jugador1__.__nombre__, "Nuevo1")
+        self.assertEqual(interfaz.__game__.__jugador2__.__nombre__, "Nuevo2")
+
 
 #===============================================================#
 
@@ -416,6 +431,5 @@ class TestCLI(unittest.TestCase):
         interfaz = cli("Fran", "Maria")
         interfaz.jugar_turno()
         mock_print.assert_any_call("Opción inválida.")
-
 if __name__ == "__main__":
     unittest.main()
