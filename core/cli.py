@@ -83,6 +83,7 @@ class cli:
             print("7. Mostrar movimientos posibles")
             print("8. Mostrar estado completo")
             print("9. Mostrar ganador")
+            print("10. Reiniciar el juego")
 
             opcion = input("Elija acción: ")
 
@@ -118,6 +119,10 @@ class cli:
                 
                 elif opcion == "9":
                     self.mostrar_ganador()
+                
+                elif opcion == "10":
+                    print("El juego se reinició")
+                    self.inicar_juego()
 
                 else:
                     print("Opción inválida.")
