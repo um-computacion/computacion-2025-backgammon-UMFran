@@ -25,3 +25,18 @@ class TableroGrafico:
         pygame_ui.draw.rect(self.pantalla,color_borde,
             pygame_ui.Rect(x_barra, 0, self.ancho_barra, self.alto),2)
         
+        #Parte superior izquierda(6 triangulos)
+        for i in range(6):
+            x = i * self.ancho_triangulo + self.ancho_barra // 2
+            puntos = [(x, 0),
+                    (x + self.ancho_triangulo, 0),
+                    (x + self.ancho_triangulo // 2, self.alto_triangulo)]
+            pygame_ui.draw.polygon(self.pantalla, colores[i % 2], puntos)
+
+        #Parte superior derecha(6 triangulos)
+        for i in range(6):
+            x = x_barra + self.ancho_barra + (i * self.ancho_triangulo)
+            puntos = [(x, 0),
+                    (x + self.ancho_triangulo, 0),
+                    (x + self.ancho_triangulo // 2, self.alto_triangulo)]
+            pygame_ui.draw.polygon(self.pantalla, colores[i % 2], puntos)
