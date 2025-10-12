@@ -68,3 +68,10 @@ class TableroGrafico:
             pygame_ui.Rect(self.ancho - self.ancho_barra // 2, 0, self.ancho_barra // 2, self.alto))
         pygame_ui.draw.rect(self.pantalla,color_borde,
             pygame_ui.Rect(self.ancho - self.ancho_barra // 2, 0, self.ancho_barra // 2, self.alto),2)
+    
+    def dibujar_fichas(self, estado: dict):
+        """Dibuja las fichas en el tablero según el estado del juego con punto 1 arriba a la derecha"""
+        for punto, datos in estado.items():
+            color = (255, 255, 255) if datos["color"] == "Blanca" else (0, 0, 0)
+            cantidad = datos["cantidad"]
+            
