@@ -74,4 +74,17 @@ class TableroGrafico:
         for punto, datos in estado.items():
             color = (255, 255, 255) if datos["color"] == "Blanca" else (0, 0, 0)
             cantidad = datos["cantidad"]
-            
+
+            # parte superior
+            if punto <= 12:
+                # Los triángulos van de derecha a izquierda
+                if punto <= 6:
+                    # Triángulos de la derecha
+                    x = (6 - punto) * self.ancho_triangulo + self.ancho_triangulo // 2 \
+                        + self.ancho_barra // 2 + (7 * self.ancho_triangulo)
+                else:
+                    # Triángulos de la izquierda
+                    x = (12 - punto) * self.ancho_triangulo + self.ancho_triangulo // 2 \
+                        + self.ancho_barra // 2
+                y_base = self.radio_ficha
+                step = self.radio_ficha * 2
