@@ -108,3 +108,40 @@ class TableroGrafico:
                 y = y_base + step * i
                 pygame_ui.draw.circle(self.pantalla, color, (x, y), self.radio_ficha)
                 pygame_ui.draw.circle(self.pantalla, (0, 0, 0), (x, y), self.radio_ficha, 2)
+
+    def obtener_punto_desde_click(self, pos):
+        """
+        Devuelve el numero de punto (1-24) segun la posicion del clic del mouse.
+        Si se clickea fuera de un punto, devuelve None.
+        """
+        x, y = pos
+        margen = self.ancho // 20
+        barra = self.ancho // 20
+        mitad = self.alto // 2
+
+        #Determina si el clic esta arriba o abajo
+        parte_superior = y < mitad
+
+        #Calcula columna segun x
+        if x < margen or x > self.ancho - margen:
+            return None  # fuera del tablero
+
+        #Ajusta x relativo al tablero
+        x_rel = x - margen
+        if x > margen + 6 * self.ancho_triangulo:
+            # a la derecha de la barra
+            x_rel -= barra
+
+        indice = int(x_rel // self.ancho_triangulo)
+        if indice < 0 or indice > 11:
+            return None
+
+        # Convertierte a numero de punto
+        if parte_superior:
+            # 1 a 12 (de derecha a izquierda)
+            punto = 12 - indice
+        else:
+            # 13 a 24 (de izquierda a derecha)
+            punto = 13 + indice
+
+        return punto
