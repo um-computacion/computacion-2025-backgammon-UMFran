@@ -102,3 +102,9 @@ class TableroGrafico:
                         + self.ancho_barra // 2 + (7 * self.ancho_triangulo)
                 y_base = self.alto - self.radio_ficha
                 step = -self.radio_ficha * 2
+            
+             # Dibujar fichas en pila
+            for i in range(cantidad):
+                y = y_base + step * i
+                pygame_ui.draw.circle(self.pantalla, color, (x, y), self.radio_ficha)
+                pygame_ui.draw.circle(self.pantalla, (0, 0, 0), (x, y), self.radio_ficha, 2)
