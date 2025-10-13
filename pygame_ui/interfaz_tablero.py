@@ -88,3 +88,17 @@ class TableroGrafico:
                         + self.ancho_barra // 2
                 y_base = self.radio_ficha
                 step = self.radio_ficha * 2
+            
+            # parte inferior
+            else:
+                # Los triángulos van de derecha a izquierda
+                if punto <= 18:
+                    # Triángulos de la izquierda (19–24)
+                    x = (punto - 13) * self.ancho_triangulo + self.ancho_triangulo // 2 \
+                        + self.ancho_barra // 2
+                else:
+                    # Triángulos de la derecha (13–18)
+                    x = (punto - 19) * self.ancho_triangulo + self.ancho_triangulo // 2 \
+                        + self.ancho_barra // 2 + (7 * self.ancho_triangulo)
+                y_base = self.alto - self.radio_ficha
+                step = -self.radio_ficha * 2
