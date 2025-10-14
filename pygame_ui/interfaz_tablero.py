@@ -1,14 +1,25 @@
-import pygame_ui
+import pygame
+from core.backgammongame import backgammongame
 
 class TableroGrafico:
     def __init__(self, pantalla):
+        juego = backgammongame("jugador1", "Jugador2")
         self.pantalla = pantalla
         self.ancho = self.pantalla.get_width()
-        self.alto = self.pantalla.get_heigth()
-        self.ancho_triangulo = self.ancho // 14
+        self.alto = self.pantalla.get_height()
+        
+        # Ajustamos dimensiones para dejar espacio para info
+        self.ancho_tablero = self.ancho * 0.9
+        self.margen_x = (self.ancho - self.ancho_tablero) / 2
+        
+        self.ancho_triangulo = self.ancho_tablero / 13
         self.ancho_barra = self.ancho_triangulo
-        self.alto_triangulo = self.alto // 2
-        self.radio_ficha = self.ancho_triangulo // 3
+        self.alto_triangulo = self.alto * 0.4
+        self.radio_ficha = (self.ancho_triangulo / 2) * 0.8
+        
+        # Fuentes
+        self.fuente_dados = pygame.font.SysFont("arial", 40, bold=True)
+        self.fuente_info = pygame.font.SysFont("arial", 24)
     
     def dibujar_tablero(self):
         colores= [(180, 100, 80), (250, 220, 200)] #Color triangulos
@@ -20,10 +31,10 @@ class TableroGrafico:
 
         #Barra central
         x_barra = x_barra = (self.ancho / 2) - (self.ancho_barra / 2)
-        pygame_ui.draw.rect(self.pantalla,color_barra_central,
-            pygame_ui.Rect(x_barra, 0, self.ancho_barra, self.alto))
-        pygame_ui.draw.rect(self.pantalla,color_borde,
-            pygame_ui.Rect(x_barra, 0, self.ancho_barra, self.alto),2)
+        pygame.draw.rect(self.pantalla,color_barra_central,
+            pygame.Rect(x_barra, 0, self.ancho_barra, self.alto))
+        pygame.draw.rect(self.pantalla,color_borde,
+            pygame.Rect(x_barra, 0, self.ancho_barra, self.alto),2)
         
         #Parte superior izquierda(6 triangulos)
         for i in range(6):
@@ -31,7 +42,7 @@ class TableroGrafico:
             puntos = [(x, 0),
                     (x + self.ancho_triangulo, 0),
                     (x + self.ancho_triangulo // 2, self.alto_triangulo)]
-            pygame_ui.draw.polygon(self.pantalla, colores[i % 2], puntos)
+            pygame.draw.polygon(self.pantalla, colores[i % 2], puntos)
 
         #Parte superior derecha(6 triangulos)
         for i in range(6):
@@ -39,7 +50,7 @@ class TableroGrafico:
             puntos = [(x, 0),
                     (x + self.ancho_triangulo, 0),
                     (x + self.ancho_triangulo // 2, self.alto_triangulo)]
-            pygame_ui.draw.polygon(self.pantalla, colores[i % 2], puntos)
+            pygame.draw.polygon(self.pantalla, colores[i % 2], puntos)
         
            #Parte inferior izquierda(6 triangulos)
         for i in range(6):
@@ -47,7 +58,7 @@ class TableroGrafico:
             puntos = [(x, self.alto),
                     (x + self.ancho_triangulo, self.alto),
                     (x + self.ancho_triangulo // 2, self.alto - self.alto_triangulo)]
-            pygame_ui.draw.polygon(self.pantalla, colores[i % 2], puntos)
+            pygame.draw.polygon(self.pantalla, colores[i % 2], puntos)
 
         #Parte inferior derecha (6 triangulos)
         for i in range(6):
@@ -55,20 +66,62 @@ class TableroGrafico:
             puntos = [(x, self.alto),
                     (x + self.ancho_triangulo, self.alto),
                     (x + self.ancho_triangulo // 2, self.alto - self.alto_triangulo)]
-            pygame_ui.draw.polygon(self.pantalla, colores[i % 2], puntos)
+            pygame.draw.polygon(self.pantalla, colores[i % 2], puntos)
         
         # Barra exterior izquierda
-        pygame_ui.draw.rect(self.pantalla,color_barra_central,
-            pygame_ui.Rect(0, 0, self.ancho_barra // 2, self.alto))
-        pygame_ui.draw.rect(self.pantalla,color_borde,
-            pygame_ui.Rect(0, 0, self.ancho_barra // 2, self.alto),2)
+        pygame.draw.rect(self.pantalla,color_barra_central,
+            pygame.Rect(0, 0, self.ancho_barra // 2, self.alto))
+        pygame.draw.rect(self.pantalla,color_borde,
+            pygame.Rect(0, 0, self.ancho_barra // 2, self.alto),2)
 
         # Barra exterior derecha
-        pygame_ui.draw.rect(self.pantalla,color_barra_central,
-            pygame_ui.Rect(self.ancho - self.ancho_barra // 2, 0, self.ancho_barra // 2, self.alto))
-        pygame_ui.draw.rect(self.pantalla,color_borde,
-            pygame_ui.Rect(self.ancho - self.ancho_barra // 2, 0, self.ancho_barra // 2, self.alto),2)
+        pygame.draw.rect(self.pantalla,color_barra_central,
+            pygame.Rect(self.ancho - self.ancho_barra // 2, 0, self.ancho_barra // 2, self.alto))
+        pygame.draw.rect(self.pantalla,color_borde,
+            pygame.Rect(self.ancho - self.ancho_barra // 2, 0, self.ancho_barra // 2, self.alto),2)
     
+    def _get_coords_from_point(self, punto: int):
+        """Función clave: Convierte un número de punto (1-24) a coordenadas de píxel (x, y)"""
+        if not (1 <= punto <= 24): return None, None
+        
+        # Parte superior (puntos 1 a 12)
+        if 1 <= punto <= 12:
+            y_base = self.radio_ficha + 10
+            step = self.radio_ficha * 2
+            
+            if 1 <= punto <= 6: # Cuadrante superior derecho
+                col = 6 - punto
+                x = self.margen_x + (6 * self.ancho_triangulo) + self.ancho_barra + (col * self.ancho_triangulo) + self.ancho_triangulo / 2
+            else: # Cuadrante superior izquierdo
+                col = 12 - punto
+                x = self.margen_x + (col * self.ancho_triangulo) + self.ancho_triangulo / 2
+        # Parte inferior (puntos 13 a 24)
+        else:
+            y_base = self.alto - self.radio_ficha - 10
+            step = -self.radio_ficha * 2
+
+            if 13 <= punto <= 18: # Cuadrante inferior izquierdo
+                col = punto - 13
+                x = self.margen_x + (col * self.ancho_triangulo) + self.ancho_triangulo / 2
+            else: # Cuadrante inferior derecho
+                col = punto - 19
+                x = self.margen_x + (6 * self.ancho_triangulo) + self.ancho_barra + (col * self.ancho_triangulo) + self.ancho_triangulo / 2
+
+        return int(x), (y_base, step)
+
+    def resaltar_ficha_seleccionada(self, punto: int, cantidad_fichas: int):
+        x, (y_base, step) = self._get_coords_from_point(punto)
+        y = y_base + step * (cantidad_fichas - 1)
+        pygame.draw.circle(self.pantalla, (255, 255, 0), (x, y), self.radio_ficha + 4, 4)
+
+    def dibujar_movimientos_posibles(self, puntos_destino: list):
+        color_resaltado = (0, 200, 0, 150)
+        for punto in puntos_destino:
+            x, (y_base, _) = self._get_coords_from_point(punto)
+            superficie = pygame.Surface((self.radio_ficha * 2, self.radio_ficha * 2), pygame.SRCALPHA)
+            pygame.draw.circle(superficie, color_resaltado, (self.radio_ficha, self.radio_ficha), self.radio_ficha)
+            self.pantalla.blit(superficie, (x - self.radio_ficha, y_base - self.radio_ficha))
+
     def dibujar_fichas(self, estado: dict):
         """Dibuja las fichas en el tablero según el estado del juego con punto 1 arriba a la derecha"""
         for punto, datos in estado.items():
@@ -106,42 +159,61 @@ class TableroGrafico:
              # Dibujar fichas en pila
             for i in range(cantidad):
                 y = y_base + step * i
-                pygame_ui.draw.circle(self.pantalla, color, (x, y), self.radio_ficha)
-                pygame_ui.draw.circle(self.pantalla, (0, 0, 0), (x, y), self.radio_ficha, 2)
+                pygame.draw.circle(self.pantalla, color, (x, y), self.radio_ficha)
+                pygame.draw.circle(self.pantalla, (0, 0, 0), (x, y), self.radio_ficha, 2)
 
     def obtener_punto_desde_click(self, pos):
-        """
-        Devuelve el numero de punto (1-24) segun la posicion del clic del mouse.
-        Si se clickea fuera de un punto, devuelve None.
-        """
+
         x, y = pos
-        margen = self.ancho // 20
-        barra = self.ancho // 20
-        mitad = self.alto // 2
+        
+        # Usar las mismas dimensiones que al dibujar
+        margen_lateral = self.ancho_barra // 2
+        ancho_barra_central = self.ancho_barra
 
-        #Determina si el clic esta arriba o abajo
-        parte_superior = y < mitad
+        # Determina si el clic está en la parte superior o inferior
+        parte_superior = y < self.alto / 2
 
-        #Calcula columna segun x
-        if x < margen or x > self.ancho - margen:
-            return None  # fuera del tablero
+        # Calcula la columna según x, ignorando los márgenes laterales
+        if x < margen_lateral or x > self.ancho - margen_lateral:
+            return None  # Clic fuera del área de juego
 
-        #Ajusta x relativo al tablero
-        x_rel = x - margen
-        if x > margen + 6 * self.ancho_triangulo:
-            # a la derecha de la barra
-            x_rel -= barra
+        # Ajusta la coordenada x para el cálculo del índice
+        x_rel = x - margen_lateral
+        # Si el clic fue en la mitad derecha del tablero, resta el ancho de la barra central
+        if x > self.ancho / 2:
+            x_rel -= ancho_barra_central
 
+        # Calcula el índice del triángulo (de 0 a 11)
         indice = int(x_rel // self.ancho_triangulo)
-        if indice < 0 or indice > 11:
+        if not (0 <= indice <= 11):
             return None
 
-        # Convertierte a numero de punto
+        # Convierte el índice al número de punto del backgammon
         if parte_superior:
-            # 1 a 12 (de derecha a izquierda)
+            # Puntos 1 a 12 (se leen de derecha a izquierda en el tablero)
             punto = 12 - indice
         else:
-            # 13 a 24 (de izquierda a derecha)
+            # Puntos 13 a 24 (se leen de izquierda a derecha en el tablero)
             punto = 13 + indice
-
+            
         return punto
+    
+    def dibujar_dados(self, dados: list):
+        texto_dados = " ".join(map(str, dados)) if dados else " "
+        COLOR_TEXTO = (0, 0, 0)
+        superficie = self.fuente_dados.render(texto_dados, True, COLOR_TEXTO)
+        rect = superficie.get_rect(center=(self.ancho / 2, self.alto / 2))
+        pygame.draw.rect(self.pantalla, (250, 220, 200), rect.inflate(20,10))
+        pygame.draw.rect(self.pantalla, COLOR_TEXTO, rect.inflate(20,10), 2)
+        self.pantalla.blit(superficie, rect)
+
+    def adaptar_estado_tablero(board_casillas: list):
+        estado_grafico = {}
+        for indice, casilla in enumerate(board_casillas):
+            if casilla:  # Solo procesa las casillas que tienen fichas
+                punto = indice + 1  # Convierte el índice (0-23) a punto (1-24)
+                estado_grafico[punto] = {
+                    "color": casilla[0],
+                    "cantidad": len(casilla)
+                }
+        return estado_grafico

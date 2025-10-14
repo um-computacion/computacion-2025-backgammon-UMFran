@@ -43,18 +43,25 @@ class backgammongame:
         self.__dados__.usar_dado(movimiento)  # Sacamos el movimiento de los dados
     
     def reingresar_ficha(self, destino: int):
-        color = self.__turno__.obtener_color() 
-        movimiento = destino + 1
-
-        # Verificamos si está disponible el movimiento
-        if movimiento not in self.__dados__.__movimientos__:
-            raise ValueError(f"Movimiento {movimiento} no está disponible en los dados {self.__dados__.__movimientos__}")
+        color = self.__turno__.obtener_color()
         
+        # Calcular el valor del dado necesario para este movimiento
+        if color == "black":
+            movimiento_necesario = destino + 1 # Asumiendo que los puntos 1-6 son indices 0-5
+        else: # "white"
+            movimiento_necesario = 24 - destino # Asumiendo que los puntos 19-24 son indices 18-23
+        
+        # Verificamos si el dado está disponible
+        if movimiento_necesario not in self.__dados__.get_dados(): # Usar un getter si es posible
+            raise ValueError(f"Movimiento {movimiento_necesario} no está disponible.")
+        
+        # Mover la ficha y usar el dado
         self.__board__.move_checker_banco(color, destino)
-        self.__dados__.usar_dado(movimiento)
+        self.__dados__.usar_dado(movimiento_necesario)
     
     def sacar(self, origen: int):
         color = self.__turno__.obtener_color()
+        dados_disponibles = self.__dados__.get_dados() # ej: [5, 2]
 
         if color == "white":
             fichas_fuera_cuadrante = any(
@@ -68,19 +75,57 @@ class backgammongame:
         if fichas_fuera_cuadrante:
             raise ValueError(f"El jugador {color} no puede sacar fichas: todavía tiene piezas fuera de su cuadrante final")
 
-        # Calcular el valor necesario para sacar
-        movimiento = 24 - origen if color == "white" else origen + 1
+        movimiento_exacto = 0
+        if color == "white":
+            # Las blancas sacan desde 19-24
+            if not (19 <= origen <= 24):
+                raise ValueError("Las fichas blancas solo pueden sacar desde los puntos 19 a 24.")
+            movimiento_exacto = 25 - origen
+        else: # "black"
+            # Las negras sacan desde 1-6
+            if not (1 <= origen <= 6):
+                raise ValueError("Las fichas negras solo pueden sacar desde los puntos 1 a 6.")
+            movimiento_exacto = origen
+            
+        dado_a_usar = 0
+        
+        if movimiento_exacto in dados_disponibles:
+            dado_a_usar = movimiento_exacto
+        else:
+            dado_mayor_disponible = max(dados_disponibles) if dados_disponibles else 0
+            if dado_mayor_disponible > movimiento_exacto:
+                punto_mas_alto = self.__board__.obtener_punto_mas_alto(color)
+                if origen == punto_mas_alto:
+                    dado_a_usar = dado_mayor_disponible
+        
+        if dado_a_usar == 0:
+            raise ValueError(f"No tienes un dado válido para sacar una ficha desde el punto {origen}.")
 
-        # Validar dado
-        if movimiento not in self.__dados__.__movimientos__:
-            raise ValueError(f"No puedes sacar desde {origen}, el valor {movimiento} no está en los dados {self.__dados__.__movimientos__}")
-
-        # Intentar sacar ficha
         if self.__board__.sacar_ficha(color, origen):
-            self.__turno__.restar_ficha()
-            self.__dados__.usar_dado(movimiento)
+            self.__turno__.restar_ficha()      # El jugador tiene una ficha menos en el tablero
+            self.__dados__.usar_dado(dado_a_usar) # Se consume el dado utilizado
+            print(f"Ficha {color} sacada desde {origen} usando un dado de {dado_a_usar}")
             return True
+        
         return False
+    
+    def mostrar_movimientos_posibles(self):
+        dados = self.__dados__.get_dados()
+        color = self.__turno__.obtener_color()
+        tablero = self.mostrar_tablero()
+        
+        print(f"\nMovimientos posibles para {color}:")
+        for i, punto in enumerate(tablero):
+            if punto and punto[-1] == color:  # Si hay ficha del color actual
+                for dado in dados:
+                    if color == "white":
+                        destino = i + dado
+                    else:
+                        destino = i - dado
+                    
+                    if 0 <= destino <= 23:
+                        print(f"  {i} → {destino} (usando dado {dado})")
+    
 
     # Funciones del turno
     def cambiar_turno(self):

@@ -99,3 +99,26 @@ class Board:
 
     def get_home(self, color: str):
         return list(self.__home__[color])
+    
+    def obtener_punto_mas_alto(self, color: str):
+        """
+        Devuelve el índice (0-23) de la ficha más alejada en el cuadrante final.
+        - Para 'black', es el índice más alto (entre 0-5).
+        - Para 'white', es el índice más bajo (entre 18-23).
+        Devuelve None si no hay fichas de ese color en el cuadrante.
+        """
+        if color == "black":
+            # Buscamos de atrás para adelante (del 5 al 0)
+            for i in range(5, -1, -1):
+                casilla = self.__casillas__[i]
+                if casilla and casilla[0] == color:
+                    return i  # Devuelve el índice (0-23)
+        
+        elif color == "white":
+            # Buscamos hacia adelante (del 18 al 23)
+            for i in range(18, 24):
+                casilla = self.__casillas__[i]
+                if casilla and casilla[0] == color:
+                    return i  # Devuelve el índice (0-23)
+
+        return None # Si no se encuentra ninguna ficha
