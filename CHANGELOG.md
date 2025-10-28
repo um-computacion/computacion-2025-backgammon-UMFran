@@ -211,3 +211,12 @@
 
 - cli/jugar_turno
 - tests/test_cli.py
+
+## [1.4.0] - 2025-10-10
+
+### Added
+
+- pygame_ui/interfaz_tablero.py
+- pygame_ui/__init__.py
+- interfaz_tablero/__init__
+- interfaz_tablero/dibujar_tablero

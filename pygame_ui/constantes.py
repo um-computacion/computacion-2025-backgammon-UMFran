@@ -1,0 +1,61 @@
+import pygame
+
+pygame.font.init()
+
+# --- TAMAÑOS ---
+ANCHO = 800
+ALTO = 600
+
+# Geometría del tablero
+ANCHO_TRIANGULO = ANCHO // 15
+ANCHO_BARRA = ANCHO_TRIANGULO
+ANCHO_HOME = ANCHO_TRIANGULO
+MARGEN_SUPERIOR = 20
+MARGEN_INFERIOR = ALTO - MARGEN_SUPERIOR
+ALTO_TRIANGULO = (ALTO // 2) - MARGEN_SUPERIOR * 2
+RADIO_FICHA = (ANCHO_TRIANGULO // 2) - 4
+MAX_FICHAS_APILADAS = 5
+
+# --- COLORES ---
+COLOR_FONDO = (240, 217, 181)
+COLOR_TRIANGULO_1 = (118, 150, 86)
+COLOR_TRIANGULO_2 = (234, 235, 200)
+COLOR_BARRA = (180, 136, 99)
+COLOR_HOME = (200, 170, 130)
+
+COLOR_FICHA_BLANCA = (255, 255, 255)
+COLOR_FICHA_NEGRA = (0, 0, 0)
+COLOR_BORDE_FICHA = (100, 100, 100)
+COLOR_TEXTO = (50, 50, 50)
+COLOR_BOTON = (140, 170, 100)
+COLOR_BOTON_HOVER = (160, 190, 120)
+COLOR_ERROR = (200, 0, 0)
+COLOR_SELECCION = (255, 255, 0, 150)
+COLOR_HIGHLIGHT = (0, 255, 0, 100) # Verde semi-transparente para movimientos posibles
+
+# --- FUENTES ---
+FONT_DADOS = pygame.font.SysFont('Arial', 30, bold=True)
+FONT_TURNO = pygame.font.SysFont('Arial', 24)
+FONT_MENSAJE = pygame.font.SysFont('Arial', 20, bold=True)
+FONT_GANADOR = pygame.font.SysFont('Arial', 50, bold=True)
+FONT_MENU_TITULO = pygame.font.SysFont('Arial', 40, bold=True)
+FONT_INPUT = pygame.font.SysFont('Arial', 24)
+
+# --- ZONAS DE CLIC ---
+ZONA_BARRA = pygame.Rect(ANCHO // 2 - ANCHO_BARRA // 2, 0, ANCHO_BARRA, ALTO)
+ZONA_HOME_NEGRO = pygame.Rect(ANCHO - ANCHO_HOME, 0, ANCHO_HOME, ALTO // 2)
+ZONA_HOME_BLANCO = pygame.Rect(ANCHO - ANCHO_HOME, ALTO // 2, ANCHO_HOME, ALTO // 2)
+
+# Botones Juego
+BOTON_ROLL_DICE = pygame.Rect(ANCHO // 2 - 75, ALTO // 2 - 40, 150, 40)
+BOTON_END_TURN = pygame.Rect(ANCHO // 2 - 75, ALTO // 2 + 10, 150, 40)
+
+# Rectángulos para el menú
+MENU_RECT_TITULO = pygame.Rect(ANCHO // 2 - 200, 100, 400, 50)
+MENU_RECT_INPUT1_LABEL = pygame.Rect(ANCHO // 2 - 200, 200, 180, 40)
+MENU_RECT_INPUT1 = pygame.Rect(ANCHO // 2 + 0, 200, 200, 40)
+MENU_RECT_INPUT2_LABEL = pygame.Rect(ANCHO // 2 - 200, 260, 180, 40)
+MENU_RECT_INPUT2 = pygame.Rect(ANCHO // 2 + 0, 260, 200, 40)
+MENU_BOTON_START = pygame.Rect(ANCHO // 2 - 100, 350, 200, 50)
+COLOR_INPUT_ACTIVO = (200, 200, 255)
+COLOR_INPUT_INACTIVO = (230, 230, 230)
