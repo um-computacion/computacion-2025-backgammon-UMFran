@@ -45,35 +45,81 @@ class Board:
         return self.__casillas__[punto].pop()
     
     def mover_checker(self, origen: int, destino: int):
-        ficha = self.remover_checker(origen) #Elegimos la ficha que vamos a mover y la eliminamos de la posición en la que está
-        if destino < 0 or destino > 23:
-            raise ValueError("Punto inválido") #Validamos que el destino esté entre los puntos válidos
+        # --- INICIO DE LA CORRECCIÓN (Evitar ficha fantasma) ---
         
-        if self.__casillas__[destino] and self.__casillas__[destino][0] != ficha and len(self.__casillas__[destino]) > 1:
-            raise ValueError("Punto inválido, hay más de 1 ficha de otro color")
+        # 1. Validar origen (asegurarse de que hay fichas)
+        if not self.__casillas__[origen]:
+            raise ValueError("No hay ficha en esta casilla")
 
-        if self.__casillas__[destino] and self.__casillas__[destino][0] != ficha and len(self.__casillas__[destino]) == 1: #Comemos la ficha enemiga si es posible
+        # 2. Obtener el color de la ficha SIN removerla
+        ficha_color = self.__casillas__[origen][-1] # -1 para la de arriba
+
+        # 3. Validar destino ANTES de mover nada
+        if destino < 0 or destino > 23:
+            raise ValueError("Punto inválido")
+        
+        casilla_destino = self.__casillas__[destino]
+        if casilla_destino: # Si no está vacía
+            color_destino = casilla_destino[0]
+            cantidad_destino = len(casilla_destino)
+            
+            if color_destino != ficha_color and cantidad_destino > 1:
+                # Esta es la validación de bloqueo
+                raise ValueError("Punto inválido, hay más de 1 ficha de otro color")
+
+        # 4. AHORA SÍ, remover la ficha
+        ficha = self.remover_checker(origen) # Saca la ficha del origen
+
+        # 5. Comer ficha enemiga (si aplica)
+        if casilla_destino and casilla_destino[0] != ficha and len(casilla_destino) == 1: 
             enemigo = self.__casillas__[destino].pop()
             self.__banco__[enemigo].append(enemigo)
         
-        return self.__casillas__[destino].append(ficha) #Agregamos la ficha a la casilla
+        # 6. Poner la ficha en el destino
+        return self.__casillas__[destino].append(ficha)
+        # --- FIN DE LA CORRECCIÓN ---
     
     def move_checker_banco(self, color: str, destino:int):
-        if self.__banco__[color] != []:
-            ficha = self.__banco__[color].pop()
-            if destino < 0 or destino > 23:
-                raise ValueError("Punto inválido") #Validamos que el destino esté entre los puntos válidos
+        
+        if not self.__banco__[color]:
+            raise ValueError("No hay fichas en el banco")
 
-            if self.__casillas__[destino] and self.__casillas__[destino][0] != ficha and len(self.__casillas__[destino]) > 1:
+        # 1. Obtener el color SIN remover la ficha
+        ficha_color = self.__banco__[color][0]
+
+        # --- INICIO DE LA CORRECCIÓN (ZONA DE REINGRESO) ---
+        # 2. Validar que el destino es la zona correcta
+        if ficha_color == "white" and (destino < 0 or destino > 5):
+             raise ValueError("Fichas blancas sólo reingresan en casillas 0-5")
+        
+        if ficha_color == "black" and (destino < 18 or destino > 23):
+            raise ValueError("Fichas negras sólo reingresan en casillas 18-23")
+        # --- FIN DE LA CORRECCIÓN ---
+
+        # 3. Validar destino ANTES de mover nada
+        if destino < 0 or destino > 23:
+             # Esta validación es redundante ahora, pero la dejamos por seguridad
+            raise ValueError("Punto inválido")
+
+        casilla_destino = self.__casillas__[destino]
+        if casilla_destino: # Si no está vacía
+            color_destino = casilla_destino[0]
+            cantidad_destino = len(casilla_destino)
+
+            if color_destino != ficha_color and cantidad_destino > 1:
+                # Esta es la validación de bloqueo
                 raise ValueError("Punto inválido, hay más de 1 ficha de otro color")
 
-            if self.__casillas__[destino] and self.__casillas__[destino][0] != ficha and len(self.__casillas__[destino]) == 1: #Comemos la ficha enemiga si es posible
-                enemigo = self.__casillas__[destino].pop()
-                self.__banco__[enemigo].append(enemigo)
-            
-            return self.__casillas__[destino].append(ficha)
-        else:
-            raise ValueError("No hay fichas en el banco")
+        # 4. AHORA SÍ, remover la ficha del banco
+        ficha = self.__banco__[color].pop()
+
+        # 5. Comer ficha enemiga (si aplica)
+        if casilla_destino and casilla_destino[0] != ficha and len(casilla_destino) == 1:
+            enemigo = self.__casillas__[destino].pop()
+            self.__banco__[enemigo].append(enemigo)
+        
+        # 6. Poner la ficha en el destino
+        return self.__casillas__[destino].append(ficha)
 
     def sacar_ficha(self, color: str, origen: int):
         if self.__casillas__[origen] and self.__casillas__[origen][-1] == color:
@@ -99,26 +145,3 @@ class Board:
 
     def get_home(self, color: str):
         return list(self.__home__[color])
-    
-    def obtener_punto_mas_alto(self, color: str):
-        """
-        Devuelve el índice (0-23) de la ficha más alejada en el cuadrante final.
-        - Para 'black', es el índice más alto (entre 0-5).
-        - Para 'white', es el índice más bajo (entre 18-23).
-        Devuelve None si no hay fichas de ese color en el cuadrante.
-        """
-        if color == "black":
-            # Buscamos de atrás para adelante (del 5 al 0)
-            for i in range(5, -1, -1):
-                casilla = self.__casillas__[i]
-                if casilla and casilla[0] == color:
-                    return i  # Devuelve el índice (0-23)
-        
-        elif color == "white":
-            # Buscamos hacia adelante (del 18 al 23)
-            for i in range(18, 24):
-                casilla = self.__casillas__[i]
-                if casilla and casilla[0] == color:
-                    return i  # Devuelve el índice (0-23)
-
-        return None # Si no se encuentra ninguna ficha
