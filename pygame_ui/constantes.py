@@ -1,3 +1,9 @@
+"""
+Módulo de Constantes para la UI de Pygame.
+
+Almacena todos los valores fijos (tamaños, colores, fuentes, posiciones)
+para mantener el código de la interfaz limpio y fácil de modificar.
+"""
 import pygame
 
 pygame.font.init()
@@ -8,7 +14,8 @@ INFO_BAR_HEIGHT = 80
 ALTO_TABLERO = 600
 ALTO = ALTO_TABLERO + INFO_BAR_HEIGHT
 
-UNIT_WIDTH = ANCHO // 15 # Ancho base para barras y triángulos
+# Ancho de 15 unidades (1 barra izq + 6 tri + 1 barra cent + 6 tri + 1 home)
+UNIT_WIDTH = ANCHO // 15
 
 ANCHO_BARRA_LATERAL = UNIT_WIDTH
 ANCHO_TRIANGULO = UNIT_WIDTH
@@ -21,11 +28,11 @@ RADIO_FICHA = (ANCHO_TRIANGULO // 2) - 4
 MAX_FICHAS_APILADAS = 5
 
 # --- COLORES ---
-COLOR_FONDO_PRINCIPAL = (220, 190, 160) 
+COLOR_FONDO_PRINCIPAL = (101, 67, 33)  # Marrón Roble Oscuro
 
 COLOR_TRIANGULO_1 = (139, 69, 19)   # Marrón Cuero
-COLOR_TRIANGULO_2 = (234, 235, 200) # Crema
-COLOR_BARRA_Y_HOME = (101, 67, 33) # Marrón Roble Oscuro
+COLOR_TRIANGULO_2 = (234, 235, 200)  # Crema
+COLOR_BARRA_Y_HOME = (101, 67, 33)   # Marrón Roble Oscuro
 
 COLOR_INFO_BAR = (50, 50, 50)
 COLOR_INFO_TEXT = (220, 220, 220)
@@ -34,11 +41,10 @@ COLOR_FICHA_BLANCA = (255, 255, 255)
 COLOR_FICHA_NEGRA = (0, 0, 0)
 COLOR_BORDE_FICHA = (100, 100, 100)
 COLOR_TEXTO = (50, 50, 50)
-COLOR_TEXTO_MENU = (139, 69, 19)
+COLOR_TEXTO_MENU = (230, 230, 230)
 COLOR_BOTON = (180, 136, 99)
 COLOR_BOTON_HOVER = (200, 156, 119)
-# --- MODIFICACIÓN: Cambiar color de error a uno más visible en barra central ---
-COLOR_ERROR = (255, 60, 60) # Rojo brillante
+COLOR_ERROR = (255, 60, 60)  # Rojo brillante
 COLOR_SELECCION = (255, 255, 0, 150)
 COLOR_HIGHLIGHT = (0, 255, 0, 100)
 COLOR_COUNTER_W = (0, 0, 0)
@@ -53,22 +59,32 @@ FONT_MENU_TITULO = pygame.font.SysFont('Arial', 40, bold=True)
 FONT_INPUT = pygame.font.SysFont('Arial', 24)
 FONT_INFO_BAR = pygame.font.SysFont('Arial', 18)
 FONT_COUNTER = pygame.font.SysFont('Arial', 14, bold=True)
-# --- NUEVO: Fuente específica para el error en la barra central (puede ser igual a FONT_MENSAJE) ---
-FONT_ERROR_CENTRAL = pygame.font.SysFont('Arial', 16, bold=True)
 
 
 # --- ZONAS DE CLIC ---
 X_START_TABLERO = ANCHO_BARRA_LATERAL
-X_CENTRO_REAL = X_START_TABLERO + (ANCHO_TRIANGULO * 6) + (ANCHO_BARRA_CENTRAL // 2)
+X_CENTRO_REAL = X_START_TABLERO + (ANCHO_TRIANGULO * 6) + \
+    (ANCHO_BARRA_CENTRAL // 2)
 
 ZONA_BARRA_IZQUIERDA = pygame.Rect(0, 0, ANCHO_BARRA_LATERAL, ALTO_TABLERO)
-ZONA_BARRA_CENTRAL = pygame.Rect(X_CENTRO_REAL - ANCHO_BARRA_CENTRAL // 2, 0, ANCHO_BARRA_CENTRAL, ALTO_TABLERO)
-ZONA_HOME_NEGRO = pygame.Rect(ANCHO - ANCHO_HOME, 0, ANCHO_HOME, ALTO_TABLERO // 2)
-ZONA_HOME_BLANCO = pygame.Rect(ANCHO - ANCHO_HOME, ALTO_TABLERO // 2, ANCHO_HOME, ALTO_TABLERO // 2)
+ZONA_BARRA_CENTRAL = pygame.Rect(
+    X_CENTRO_REAL - ANCHO_BARRA_CENTRAL // 2, 0,
+    ANCHO_BARRA_CENTRAL, ALTO_TABLERO
+)
+ZONA_HOME_NEGRO = pygame.Rect(
+    ANCHO - ANCHO_HOME, 0, ANCHO_HOME, ALTO_TABLERO // 2
+)
+ZONA_HOME_BLANCO = pygame.Rect(
+    ANCHO - ANCHO_HOME, ALTO_TABLERO // 2, ANCHO_HOME, ALTO_TABLERO // 2
+)
 
 INFO_BAR_RECT = pygame.Rect(0, ALTO_TABLERO, ANCHO, INFO_BAR_HEIGHT)
-BOTON_ROLL_DICE_RECT = pygame.Rect(20, ALTO_TABLERO + INFO_BAR_HEIGHT // 2 - 20, 150, 40)
-BOTON_END_TURN_RECT = pygame.Rect(ANCHO - 170, ALTO_TABLERO + INFO_BAR_HEIGHT // 2 - 20, 150, 40)
+BOTON_ROLL_DICE_RECT = pygame.Rect(
+    20, ALTO_TABLERO + INFO_BAR_HEIGHT // 2 - 20, 150, 40
+)
+BOTON_END_TURN_RECT = pygame.Rect(
+    ANCHO - 170, ALTO_TABLERO + INFO_BAR_HEIGHT // 2 - 20, 150, 40
+)
 
 POS_TURNO_TEXT = (ANCHO // 2, ALTO_TABLERO + 15)
 POS_DADOS_TEXT = (ANCHO // 2, ALTO_TABLERO + 45)
@@ -76,8 +92,7 @@ POS_CONTADOR_W_COMIDAS = (200, ALTO_TABLERO + 15)
 POS_CONTADOR_W_SACADAS = (200, ALTO_TABLERO + 45)
 POS_CONTADOR_B_COMIDAS = (ANCHO - 350, ALTO_TABLERO + 15)
 POS_CONTADOR_B_SACADAS = (ANCHO - 350, ALTO_TABLERO + 45)
-# --- NUEVO: Posición para el mensaje de error en la barra central ---
-POS_ERROR_CENTRAL = (ZONA_BARRA_CENTRAL.centerx, ALTO_TABLERO - 30) # Cerca del borde inferior de la barra
+POS_ERROR_CENTRAL = (ZONA_BARRA_CENTRAL.centerx, ALTO_TABLERO - 30)
 
 MENU_RECT_TITULO = pygame.Rect(ANCHO // 2 - 200, 100, 400, 50)
 MENU_RECT_INPUT1_LABEL = pygame.Rect(ANCHO // 2 - 200, 200, 180, 40)
