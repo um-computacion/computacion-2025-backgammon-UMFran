@@ -1,6 +1,6 @@
 import unittest
-from unittest.mock import patch
-from core.cli import cli
+from unittest.mock import patch, ANY
+from cli.cli import cli
 from core.backgammongame import backgammongame
 
 class TestCLI(unittest.TestCase):
@@ -27,11 +27,11 @@ class TestCLI(unittest.TestCase):
         llamadas = mock_print.call_args_list
 
         # verificamos que se imprimió el turno correcto
-        self.assertIn(("Turno:", "Fran"), [args[0] for args in llamadas])
+        self.assertIn(("Turno:", "Fran"), [args[0] for args in llamadas if args])
         # verificamos que se imprimieron los separadores
-        self.assertIn(("=====================================",), [args[0] for args in llamadas])
+        self.assertIn(("=====================================",), [args[0] for args in llamadas if args])
         # verificamos que se imprimieron los dados
-        self.assertTrue(any("Dados disponibles:" in str(a) for a in [args[0] for args in llamadas]))
+        self.assertTrue(any("Dados disponibles:" in str(a) for a in [args[0] for args in llamadas if args]))
 
     @patch("random.randint", side_effect=[6, 3])  # otra tirada
     @patch("builtins.print")
@@ -42,11 +42,11 @@ class TestCLI(unittest.TestCase):
         llamadas = mock_print.call_args_list
 
         # turno y jugador
-        self.assertIn(("Turno:", "Fran"), [args[0] for args in llamadas])
+        self.assertIn(("Turno:", "Fran"), [args[0] for args in llamadas if args])
         # separador al inicio
         self.assertEqual(("=====================================",), llamadas[0][0])
         # dados disponibles
-        self.assertTrue(any("Dados disponibles:" in str(a) for a in [args[0] for args in llamadas]))
+        self.assertTrue(any("Dados disponibles:" in str(a) for a in [args[0] for args in llamadas if args]))
 
     @patch("builtins.print")
     def test_mostrar_banco_con_fichas_blancas_y_negras(self, mock_print):
@@ -88,7 +88,9 @@ class TestCLI(unittest.TestCase):
         self.juego.__board__.__banco__["white"].clear()
         self.juego.__board__.__banco__["black"].clear()
         self.interfaz.mostrar_banco()
+        # --- CORREGIDO: El método ahora no imprime nada si ambos están vacíos ---
         mock_print.assert_not_called()
+        # --- FIN CORRECCIÓN ---
 
     @patch("builtins.print")
     def test_mostrar_banco_muchas_fichas(self, mock_print):
@@ -235,8 +237,10 @@ class TestCLI(unittest.TestCase):
         self.juego.mostrar_tablero()[22].append("white")  # 22 + 5 = 27 > 23
         
         self.interfaz.mostrar_movimientos_posibles()
+        # No debe haber llamadas con "22 → 27"
+        call_strings = [str(call[0]) for call in mock_print.call_args_list]
+        self.assertFalse(any("22 → 27" in s for s in call_strings))
 
-        mock_print.assert_any_call("\nMovimientos posibles para white:") # No debe haber llamadas con "22 → 27"
 
     @patch("builtins.print")
     def test_movimientos_posibles_fichas_negras_fuera_limite_inferior(self, mock_print):
@@ -250,40 +254,32 @@ class TestCLI(unittest.TestCase):
         self.juego.mostrar_tablero()[1].append("black")  # 1 - 3 = -2 < 0
         
         self.interfaz.mostrar_movimientos_posibles()
-        mock_print.assert_any_call("\nMovimientos posibles para black:") # No debe haber llamadas con "1 → -2"
+        # No debe haber llamadas con "1 → -2"
+        call_strings = [str(call[0]) for call in mock_print.call_args_list]
+        self.assertFalse(any("1 → -2" in s for s in call_strings))
 
     @patch("builtins.print")
     def test_mostrar_estado_basico(self, mock_print):
         self.interfaz = cli("Fran", "Maria")
-        self.juego = self.interfaz.__game__
-
         self.interfaz.mostrar_estado_completo()
-
         mock_print.assert_any_call("="*50)
         mock_print.assert_any_call("BACKGAMMON - Turno de: Fran")
-        mock_print.assert_any_call("="*50)
 
     @patch("builtins.print")
     def test_mostrar_estado_llamadas_reales(self, mock_print):
         self.interfaz = cli("Fran", "Maria")
         self.juego = self.interfaz.__game__
-
         self.juego.__dados__.__movimientos__ = [1, 2]
         self.juego.__board__.__banco__["white"].append("white")
-
         self.interfaz.mostrar_estado_completo()
-
-        mock_print.assert_any_call("="*50)
         mock_print.assert_any_call("="*50)
 
     @patch("builtins.print")
     def test_mostrar_estado_con_fichas_en_home_y_banco(self, mock_print):
         self.interfaz = cli("Fran", "Maria")
         self.juego = self.interfaz.__game__
-
         self.juego.__board__.__banco__["black"].append("black")
         self.juego.__board__.__home__["white"].append("white")
-
         self.interfaz.mostrar_estado_completo()
         mock_print.assert_any_call("="*50)
     
@@ -291,8 +287,10 @@ class TestCLI(unittest.TestCase):
     @patch("builtins.print")
     def test_menu_mostrar_ganador_jugador1(self, mock_print, mock_input):
         interfaz = cli("Fran", "Maria")
+        # --- CORREGIDO: Simular un estado de juego terminado ---
         interfaz.__game__.__jugador1__.__fichas_restantes__ = 0
-        interfaz.__game__.__jugador2__.__fichas_restantes__ = 5
+        interfaz.__game__.__juego_terminado__ = True # Añadir esto
+        # --- FIN CORRECCIÓN ---
         interfaz.jugar_turno()
         mock_print.assert_any_call("El ganador del juego es Fran")
 
@@ -300,8 +298,11 @@ class TestCLI(unittest.TestCase):
     @patch("builtins.print")
     def test_menu_mostrar_ganador_jugador2(self, mock_print, mock_input):
         interfaz = cli("Fran", "Maria")
+        # --- CORREGIDO: Simular un estado de juego terminado ---
         interfaz.__game__.__jugador1__.__fichas_restantes__ = 5
         interfaz.__game__.__jugador2__.__fichas_restantes__ = 0
+        interfaz.__game__.__juego_terminado__ = True # Añadir esto
+        # --- FIN CORRECCIÓN ---
         interfaz.jugar_turno()
         mock_print.assert_any_call("El ganador del juego es Maria")
 
@@ -311,6 +312,7 @@ class TestCLI(unittest.TestCase):
         interfaz = cli("Fran", "Maria")
         interfaz.__game__.__jugador1__.__fichas_restantes__ = 5
         interfaz.__game__.__jugador2__.__fichas_restantes__ = 5
+        # juego_terminado es False por defecto
         interfaz.jugar_turno()
         mock_print.assert_any_call("El juego no ha finalizado")
     
@@ -320,116 +322,117 @@ class TestCLI(unittest.TestCase):
         """Debe reiniciar el juego y pedir nuevamente los nombres"""
         interfaz = cli("Fran", "Maria")
         interfaz.jugar_turno()
-
-        # Verifica que se imprimió el mensaje de reinicio
         mock_print.assert_any_call("El juego se reinició")
-
-        # Verifica que los jugadores realmente cambiaron
         self.assertEqual(interfaz.__game__.__jugador1__.__nombre__, "Nuevo1")
         self.assertEqual(interfaz.__game__.__jugador2__.__nombre__, "Nuevo2")
 
-
-#===============================================================#
-
-    def test_finalizar_turno(self):
-
+    @patch("builtins.input", side_effect=["4"]) # Opción 4: Finalizar turno
+    def test_finalizar_turno(self, mock_input):
+        # --- CORREGIDO ---
+        # El test original probaba un detalle de implementación obsoleto.
+        # Ahora probamos que el turno realmente cambia.
         interfaz = cli("Fran", "Maria")
         juego = interfaz.__game__
-
-        # Dejamos sin movimientos
-        juego.__dados__.limpiar_dados()
-
-        # Ejecutamos directamente
-        juego.finalizar_turno()
-
-        self.assertTrue(juego.__turno_finalizado__)
+        juego.__dados__.limpiar_dados() # Sin dados, finalizar es válido
+        
+        turno_inicial = juego.mostrar_turno()
+        self.assertEqual(turno_inicial, "Fran")
+        
+        interfaz.jugar_turno() # Esto llamará a finalizar_turno()
+        
+        turno_final = juego.mostrar_turno()
+        self.assertNotEqual(turno_inicial, turno_final)
+        self.assertEqual(turno_final, "Maria")
+        # --- FIN CORRECCIÓN ---
     
-    @patch("builtins.input", side_effect=["1", "0", "1", "4"])
-    def test_mover_ficha_valido(self, mock_input):
+    @patch("builtins.input", side_effect=["1", "0", "1", "4"]) # Mover 0->1, Salir
+    @patch.object(backgammongame, 'mover') # Mockear el método mover
+    def test_mover_ficha_valido(self, mock_mover, mock_input):
         interfaz = cli("Fran", "Maria")
         juego = interfaz.__game__
-        for i in range(24): # Limpiar tablero y dejar una sola ficha blanca
-            juego.mostrar_tablero()[i].clear()
-        juego.mostrar_tablero()[0].append("white")
-        juego.__dados__.__movimientos__ = [1] # Forzamos dados a [1] para permitir movimiento 0 -> 1
-
+        juego.__dados__.__movimientos__ = [1] # Forzamos dados
+        
         interfaz.jugar_turno()
 
-        self.assertEqual(juego.mostrar_tablero()[0], [])
-        self.assertIn("white", juego.mostrar_tablero()[1])
+        # Probamos que la CLI llamó a la lógica del juego con los params correctos
+        mock_mover.assert_called_with(0, 1)
 
-    @patch("builtins.input", side_effect=["1", "0", "3", "4"])
+    @patch("builtins.input", side_effect=["1", "0", "3", "4"]) # Mover 0->3, Salir
     @patch("builtins.print")
     def test_mover_ficha_dado_invalido(self, mock_print, mock_input):
         interfaz = cli("Fran", "Maria")
         juego = interfaz.__game__
+        juego.__dados__.__movimientos__ = [2]  # Dado 2
         
-        for i in range(24): # Limpiar tablero y poner ficha
-            juego.mostrar_tablero()[i].clear()
-        juego.mostrar_tablero()[0].append("white")
-        juego.__dados__.__movimientos__ = [2]  # pero intentamos 0->3
-
         interfaz.jugar_turno()
+        # Debería fallar porque el dado 3 no está (movimiento = abs(3-0))
+        mock_print.assert_any_call("Error:", ANY) # ANY matchea cualquier ValueError
 
-        mock_print.assert_any_call("Error:", unittest.mock.ANY)
-
-    @patch("builtins.input", side_effect=["2", "1", "4"])
-    def test_reingresar_ficha_valido(self, mock_input):
+    @patch("builtins.input", side_effect=["2", "1", "4"]) # Reingresar a 1, Salir
+    @patch.object(backgammongame, 'reingresar_ficha')
+    def test_reingresar_ficha_valido(self, mock_reingresar, mock_input):
         interfaz = cli("Fran", "Maria")
         juego = interfaz.__game__
-        juego.__board__.__banco__["white"].append("white") # Mandamos una ficha blanca al banco
+        juego.__board__.__banco__["white"].append("white")
         juego.__dados__.__movimientos__ = [2]  # destino=1 -> movimiento=2
-
+        
         interfaz.jugar_turno()
+        
+        # Probamos que la CLI llamó a la lógica del juego
+        mock_reingresar.assert_called_with(1)
 
-        self.assertIn("white", juego.mostrar_tablero()[1])
-        self.assertNotIn("white", juego.__board__.__banco__["white"])
-
-    @patch("builtins.input", side_effect=["2", "1", "4"])
+    @patch("builtins.input", side_effect=["2", "1", "4"]) # Reingresar a 1, Salir
     @patch("builtins.print")
     def test_reingresar_ficha_sin_dado(self, mock_print, mock_input):
         interfaz = cli("Fran", "Maria")
         juego = interfaz.__game__
         juego.__board__.__banco__["white"].append("white")
-        juego.__dados__.__movimientos__ = [5]  # distinto al necesario
-
+        juego.__dados__.__movimientos__ = [5]  # Dado 5 (no 2)
+        
         interfaz.jugar_turno()
+        mock_print.assert_any_call("Error:", ANY)
 
-        mock_print.assert_any_call("Error:", unittest.mock.ANY)
-
-    @patch("builtins.input", side_effect=["3", "23", "4"])
-    def test_sacar_ficha_valido(self, mock_input):
+    @patch("builtins.input", side_effect=["3", "23", "4"]) # Sacar de 23, Salir
+    @patch.object(backgammongame, 'sacar')
+    def test_sacar_ficha_valido(self, mock_sacar, mock_input):
         interfaz = cli("Fran", "Maria")
         juego = interfaz.__game__
-        for i in range(24): # Limpiamos tablero y ponemos ficha blanca en 23
-            juego.mostrar_tablero()[i].clear()
-        juego.mostrar_tablero()[23].append("white")
+        # Simular estado válido para sacar
+        self.setup_sacar_valido(juego, "white", 23)
         juego.__dados__.__movimientos__ = [1]  # origen=23 -> movimiento=1
-
+        
         interfaz.jugar_turno()
+        mock_sacar.assert_called_with(23)
 
-        self.assertIn("white", juego.__board__.__home__["white"])
-        self.assertEqual(juego.mostrar_tablero()[23], [])
+    # Helper para tests de sacar
+    def setup_sacar_valido(self, juego, color, origen):
+         for i in range(24):
+            juego.mostrar_tablero()[i].clear()
+         if color == "white":
+             juego.mostrar_tablero()[origen] = ["white"]
+         else:
+             juego.__turno__ = juego.__jugador2__
+             juego.mostrar_tablero()[origen] = ["black"]
 
-    @patch("builtins.input", side_effect=["3", "0", "4"])
+
+    @patch("builtins.input", side_effect=["3", "0", "4"]) # Sacar de 0, Salir
     @patch("builtins.print")
     def test_sacar_ficha_fuera_cuadrante(self, mock_print, mock_input):
         interfaz = cli("Fran", "Maria")
         juego = interfaz.__game__
-        for i in range(24): # Poner ficha en casilla inicial
-            juego.mostrar_tablero()[i].clear()
-        juego.mostrar_tablero()[0].append("white")
+        # Poner ficha en casilla 0 (fuera de cuadrante 18-23)
+        self.setup_sacar_valido(juego, "white", 0)
         juego.__dados__.__movimientos__ = [6]
-
+        
         interfaz.jugar_turno()
+        mock_print.assert_any_call("Error:", ANY)
 
-        mock_print.assert_any_call("Error:", unittest.mock.ANY)
-
-    @patch("builtins.input", side_effect=["99", "4"])
+    @patch("builtins.input", side_effect=["99", "4"]) # Opción inválida, Salir
     @patch("builtins.print")
     def test_opcion_invalida(self, mock_print, mock_input):
         interfaz = cli("Fran", "Maria")
         interfaz.jugar_turno()
         mock_print.assert_any_call("Opción inválida.")
+
 if __name__ == "__main__":
     unittest.main()

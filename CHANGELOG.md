@@ -220,3 +220,28 @@
 - pygame_ui/__init__.py
 - interfaz_tablero/__init__
 - interfaz_tablero/dibujar_tablero
+
+## [1.5.0] - 2025-10-27
+
+### Added 
+
+- pygame_ui/contantes.py
+- pygame_ui/main_pygame.py
+
+### Changed
+
+- pygame_ui/interfaz_tablero.py
+- core/backgammongame.py
+
+## [1.5.1] - 2025-10-30
+
+### Added 
+
+- JUSTIFACION.md
+
+### Changed
+
+- README.md
+- tests/test_cli.py
+- tests/test_game.py
+- tests/test_board.py
