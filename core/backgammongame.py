@@ -62,6 +62,12 @@ class BackgammonGame:
             self.__dados__.tirar_dados()
         return self.__dados__.get_dados()
 
+    # --- INICIO CORRECCIÓN 1: Método público para obtener dados ---
+    def get_dados(self):
+        """Devuelve la lista de dados disponibles."""
+        return self.__dados__.get_dados()
+    # --- FIN CORRECCIÓN 1 ---
+
     def mover(self, origen: int, destino: int):
         """
         Intenta mover una ficha de un origen a un destino.
@@ -77,10 +83,13 @@ class BackgammonGame:
             raise ValueError("Movimiento inválido (fichas 'black' solo retroceden)")
 
         movimiento = abs(destino - origen)
-        if movimiento not in self.__dados__.__movimientos__:
+        
+        # --- INICIO CORRECCIÓN 2: Usar get_dados() en lugar de __movimientos__ ---
+        if movimiento not in self.__dados__.get_dados():
+        # --- FIN CORRECCIÓN 2 ---
             raise ValueError(
                 f"Movimiento {movimiento} no disponible en dados "
-                f"{self.__dados__.__movimientos__}"
+                f"{self.__dados__.get_dados()}"
             )
 
         self.__board__.mover_checker(origen, destino)
@@ -101,10 +110,12 @@ class BackgammonGame:
         else:  # black
             movimiento = 24 - destino
 
-        if movimiento not in self.__dados__.__movimientos__:
+        # --- INICIO CORRECCIÓN 3: Usar get_dados() en lugar de __movimientos__ ---
+        if movimiento not in self.__dados__.get_dados():
+        # --- FIN CORRECCIÓN 3 ---
             raise ValueError(
                 f"Movimiento {movimiento} no disponible en dados "
-                f"{self.__dados__.__movimientos__}"
+                f"{self.__dados__.get_dados()}"
             )
 
         self.__board__.move_checker_banco(color, destino)
@@ -119,7 +130,10 @@ class BackgammonGame:
         """
         color = self.__turno__.obtener_color()
         tablero_actual = self.__board__.mostrar_tablero()
-        dados_actuales = self.__dados__.get_dados()
+        
+        # --- CORRECCIÓN 4: Usar el método público ---
+        dados_actuales = self.get_dados()
+        # --- FIN CORRECCIÓN 4 ---
 
         # --- Lógica de cuadrante invertida ---
         if color == "white":

@@ -64,6 +64,66 @@ computacion-2025-backgammon-UMFran/
 └── .pylintrc            # Configuración de Pylint
 ```
 
+## Diagrama de clases
+
+
+```text
+          ┌───────────────────────────┐         ┌───────────────────────────┐
+          │    main_pygame.py (UI)    │         │         cli.py (UI)         │
+          │  (Bucle principal Pygame) │         │ (Interfaz de Línea de Comandos) │
+          │      usa TableroGrafico   │         │      ATRIBUTOS:             │
+          └─────────────┬─────────────┘         │       - __game__: BackgammonGame
+                        │ usa                   └─────────────┬─────────────┘
+                        │                                     │ usa
+                        └───────────────┐   ┌───────────────┘
+                                        │   │
+                                        ▼   ▼
+┌──────────────────────────────────────────────────────────────────────────────────┐
+│                                 BackgammonGame                                   │
+│                           (Motor principal - core/backgammongame.py)             │
+├──────────────────────────────────────────────────────────────────────────────────┤
+│ ATRIBUTOS:                                                                       │
+│  - __board__: Board              (La instancia del tablero)                      │
+│  - __dados__: Dice                (La instancia de los dados)                     │
+│  - __jugador1__: Player           (Jugador de fichas 'white')                     │
+│  - __jugador2__: Player           (Jugador de fichas 'black')                     │
+│  - __jugadores__: set             (Conjunto de los dos jugadores)                 │
+│  - __turno__: Player              (Referencia a jugador1 o jugador2)              │
+│  - __turno_finalizado__: bool     (Control de estado del turno)                   │
+│  - __juego_terminado__: bool      (Controla si el juego acabó)                    │
+├──────────────────────────────────────────────────────────────────────────────────┤
+│ MÉTODOS CLAVE:                                                                   │
+│  + mover(origen, destino)        (Valida y mueve la ficha)                       │
+│  + reingresar_ficha(destino)     (Valida y saca ficha de la barra)               │
+│  + sacar(origen)                 (Valida y saca ficha del tablero)               │
+│  + finalizar_turno()             (Pasa el turno al otro jugador)                 │
+│  + tirar_dados()                 (Llama a __dados__.tirar_dados())               │
+│  + ganador()                     (Revisa si alguien ganó)                        │
+│  + get_valid_moves(origen, dados) (Para ayudar a la UI a mostrar resaltados)     │
+└─────────────────────────────────────┬────────────────────────────────────────────┘
+                                      │
+                                      │ Coordina / Posee (Composición)
+        ┌─────────────────────────────┼─────────────────────────────┐
+        │                             │                             │
+        ▼                             ▼                             ▼
+┌───────────────────────┐   ┌───────────────────────────┐   ┌───────────────────────┐
+│        Player         │   │            Board            │   │         Dice          │
+│    (core/player.py)   │   │       (core/board.py)       │   │     (core/dice.py)    │
+├───────────────────────┤   ├───────────────────────────┤   ├───────────────────────┤
+│ ATRIBUTOS:            │   │ ATRIBUTOS:                │   │ ATRIBUTOS:            │
+│  - __nombre__: str    │   │  - __contenedor__: list[24] │   │  - __movimientos__: list│
+│  - __color__: str     │   │  - __barra__: dict          │   │                       │
+│  - __fichas__: int (15) │   │  - __afuera__: dict         │   │ MÉTODOS CLAVE:        │
+│  - __fichas_restantes__ │   │                           │   │  + tirar_dados()      │
+│                       │   │ MÉTODOS CLAVE:            │   │  + get_dados()        │
+│ MÉTODOS CLAVE:        │   │  + mover_checker(o, d)    │   │  + usar_dado(v)       │
+│  + obtener_nombre()   │   │  + move_checker_banco(c, d) │   │  + hay_movimientos()  │
+│  + obtener_color()    │   │  + sacar_ficha(c, o)      │   │  + limpiar_dados()    │
+│  + restar_ficha()     │   │  + get_barra(c)           │   │                       │
+│  + ganar()            │   │  + get_afuera(c)          │   │                       │
+└───────────────────────┘   └───────────────────────────┘   └───────────────────────┘
+```
+
 ### `core/` - El Cerebro del Juego
 
 Este directorio contiene toda la lógica pura del Backgammon, sin ninguna dependencia gráfica o de consola.
