@@ -254,3 +254,116 @@ Respuesta:
     "
     Se utiliza el código dado
     core/backgammongame.py
+
+Prompt:
+NO PUEDO MOVER LAS FICHAS BLANCAS QUE ESTAN ABAJO A LA DERECHA CUANDO EJECUTO EL PYGAME
+
+Respuesta: 
+
+Voy a leer en paralelo los archivos clave (interfaz de Pygame, constantes y la lógica del tablero/comprobación) para localizar por qué no puedes mover las fichas blancas abajo a la derecha — espero obtener el código del evento de entrada y el cálculo de posiciones. Ejecutaré lecturas de los archivos y devolveré un resumen y próximos pasos.
+
+Read main_pygame.py
+
+Read interfaz_tablero.py
+
+Read board.py
+
+Read checker.py
+
+Read constantes.py
+
+Estoy leyendo ahora la lógica del juego (BackgammonGame, dados y jugador) para entender get_valid_moves, mover, sacar y reingreso; esto ayudará a encontrar por qué no puedes mover ciertas fichas. Leeré esos archivos.
+
+Read backgammongame.py
+
+Searched text for get_banco|get_banco(|get_home|get_barra|get_afuera|get_home, no results
+
+Realizo una corrección en main_pygame.py: reemplazo las llamadas a métodos inexistentes (get_banco, get_home) por los métodos correctos del Board (get_barra, get_afuera) y ajusto las llamadas a dibujar_fichas y dibujar_ui para que pasen el número correcto de argumentos (longitudes donde se esperan contadores). Esto debería solucionar los errores de argumentos y permitir seleccionar/mover fichas correctamente. Aplicaré el parche ahora.
+
+main_pygame.py+14-5
+Created 5 todos
+
+He corregido la causa más probable por la que no podías mover las fichas blancas abajo a la derecha: había llamadas a métodos del Board que no existen y llamadas a las funciones de la UI con argumentos incorrectos. Hice los cambios en main_pygame.py para usar los métodos correctos y pasar los argumentos que la interfaz espera.
+
+Resumen de lo que hice
+
+Leí los archivos relevantes (UI y lógica): main_pygame.py, interfaz_tablero.py, board.py, checker.py, constantes.py y backgammongame.py.
+Detecté problemas:
+Llamadas a game.__board__.get_banco(...) y get_home(...) que no existen. El Board define get_barra(...) y get_afuera(...).
+interfaz_tablero.dibujar_fichas espera (board_state, banco_blanco, banco_negro) pero main_pygame.py le pasaba también las listas de home (argumentos de más).
+interfaz_tablero.dibujar_ui esperaba contadores (longitudes) además de otros parámetros; main_pygame.py pasaba menos argumentos.
+Cambios aplicados (archivo editado):
+main_pygame.py:
+Reemplacé get_banco por get_barra y get_home por get_afuera.
+Ajusté la llamada a dibujar_fichas para pasar solo (tablero, banco_white, banco_black).
+Llamo a dibujar_ui pasando además los contadores (len de banco/home) en el orden que espera la función.
+Busqué otras ocurrencias y verifiqué que ahora el código usa get_barra / get_afuera coherentemente.
+Qué debes probar (instrucciones para PowerShell)
+
+Abre una terminal en la raíz del proyecto (tu carpeta mostrada).
+Ejecuta el script principal de Pygame:
+En la ventana de Pygame:
+Empieza el juego (botón "Empezar Juego").
+Pulsa "Tirar Dados" (si hace falta).
+Intenta seleccionar y mover una ficha blanca del sector abajo-derecha (esos triángulos de la esquina inferior derecha).
+Observa si ya puedes seleccionar y moverla a un destino válido (destacado con highlight).
+Si todo va bien: confirma que ahora puedes mover esa ficha. Cierro la tarea en la lista y marco la prueba como completada.
+
+Si aún falla: dime lo siguiente para seguir depurando
+
+¿Aparece algún mensaje de error en la consola? (pásame el texto completo o una captura).
+¿Qué comportamiento ves exactamente? (p. ej. no se selecciona la ficha, se selecciona pero no aparecen destinos, aparece mensaje "Movimiento inválido", etc.)
+Si puedes, haz una captura o graba los pasos: ayuda mucho ver exactamente qué clic hiciste.
+Posibles siguientes pasos si persiste el problema
+
+Si el clic no devuelve el índice esperado: añadir logs temporales en TableroGrafico.obtener_casilla_desde_pos y en el manejador de eventos de main_pygame.py para imprimir la posición del mouse y el índice detectado.
+Verificar la orientación/numérico de índices en la UI vs la lógica (si la convención de 0..23 está invertida en algún sitio).
+Ejecutar los tests unitarios relevantes (si quieres, puedo lanzarlos aquí y revisar fallos).
+Estado del plan (todo list)
+
+Leer archivos clave — completed
+Identificar discrepancias — completed
+Corregir main_pygame.py — completed
+Buscar ocurrencias residuales — completed
+Probar Pygame y validar movimiento — in-progress (te pido que pruebes y me digas el resultado)
+¿Lo pruebas ahora y me cuentas el resultado / errores que aparezcan? Si quieres, puedo añadir logs de depuración automáticamente para capturar el índice de casilla cuando haces clic — dime si lo quieres y lo inserto.
+
+Prompt:
+    NO ME DEJA EJECUTAR EL PYGAME AttributeError: module 'pygame_ui.constantes' has no attribute 'COLOR_FONDO'. Did you mean: 'COLOR_BOTON'?
+(venv) PS C:\Users\franm\OneDrive\Documentos\UM\Segundo Año\Computación\computacion-2025-backgammon-UMFran> python -m pygame_ui.main_pygame
+pygame 2.6.1 (SDL 2.28.4, Python 3.13.9)
+Hello from the pygame community. https://www.pygame.org/contribute.html
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "C:\Users\franm\OneDrive\Documentos\UM\Segundo Año\Computación\computacion-2025-backgammon-UMFran\pygame_ui\main_pygame.py", line 292, in <module>
+    main()
+    ~~~~^^
+  File "C:\Users\franm\OneDrive\Documentos\UM\Segundo Año\Computación\computacion-2025-backgammon-UMFran\pygame_ui\main_pygame.py", line 261, in main
+    pantalla.fill(C.COLOR_FONDO)
+                  ^^^^^^^^^^^^^
+AttributeError: module 'pygame_ui.constantes' has no attribute 'COLOR_FONDO'. Did you mean: 'COLOR_BOTON'?
+
+Respuesta:
+Haré una búsqueda rápida de referencias a COLOR_FONDO y luego corregiré main_pygame.py para usar la constante existente COLOR_FONDO_PRINCIPAL. Esperaré el resultado y luego aplicaré el parche.
+
+main_pygame.py+2-1
+Read main_pygame.py, lines 240 to 293
+
+main_pygame.py+0-0
+Read main_pygame.py, lines 252 to 293
+
+Updated todo list
+
+He corregido el AttributeError: cambié el uso inexistente de C.COLOR_FONDO por C.COLOR_FONDO_PRINCIPAL y arreglé la indentación afectada en main_pygame.py.
+
+Siguientes pasos para ti (ejecuta en PowerShell desde la raíz del proyecto)
+
+Qué mirar después de ejecutar
+
+Si la ventana de Pygame se abre correctamente y no hay traceback en la consola, intenta mover las fichas blancas abajo a la derecha como antes.
+Si aparece otro error, copia aquí el traceback completo.
+Si no hay errores pero no se pueden mover las fichas, dime exactamente qué pasa (no se seleccionan, no aparecen destinos, aparece un mensaje en la UI, etc.). Puedo añadir logs para depurar qué casilla devuelve la función de la UI al hacer clic y qué destinos calcula get_valid_moves.
+¿Lo vuelves a correr y me pegas la salida si falla? Si quieres, puedo añadir logs de depuración automáticos (en TableroGrafico.obtener_casilla_desde_pos y en el manejador de eventos) para mostrar en consola el índice de casilla y listas de movimientos cuando hagas clic — dime si prefieres eso y lo añado.
+
+se usa tal cual para corregir el error

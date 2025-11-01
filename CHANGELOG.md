@@ -245,3 +245,17 @@
 - tests/test_cli.py
 - tests/test_game.py
 - tests/test_board.py
+
+## [1.5.1] - 2025-11-01
+
+### Changed
+
+- README.md
+- JUSTIFICACION.md
+- CHANGELOG.md
+- tests/test_cli.py
+- tests/test_game.py
+- tests/test_board.py
+- core/backgammongame.py
+- core/board.py
+- pygame_ui/main_pygame.py
