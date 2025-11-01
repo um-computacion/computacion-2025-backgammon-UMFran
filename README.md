@@ -57,84 +57,38 @@ Este paquete se encarga de todo lo visual y la interacción con el mouse.
 
 ## Diagrama de Clases referente al proyecto
 
-```mermaid
-classDiagram
-    direction TD
-
-    class main_pygame {
-        <<Script>>
-        -BackgammonGame game
-        -TableroGrafico interfaz
-        -str game_state
-        +main()
-    }
-
-    class cli {
-        <<Interface>>
-        -BackgammonGame __game__
-        +jugar_turno()
-    }
-
-    class TableroGrafico {
-        <<Pygame UI>>
-        -Surface pantalla
-        -list rects_puntos
-        +dibujar_tablero()
-        +dibujar_fichas()
-        +dibujar_ui()
-        +dibujar_menu()
-        +dibujar_highlights()
-        +obtener_casilla_desde_pos(pos)
-    }
-
-    class BackgammonGame {
-        <<Core Engine>>
-        -Board __board__
-        -Dice __dados__
-        -Player __jugador1__
-        -Player __jugador2__
-        +mover(origen, destino)
-        +reingresar_ficha(destino)
-        +sacar(origen)
-        +finalizar_turno()
-        +get_valid_moves(origen, dados)
-    }
-
-    class Board {
-        <<Core Model>>
-        -list __casillas__
-        -dict __banco__
-        -dict __home__
-        +mover_checker(origen, destino)
-        +move_checker_banco(color, destino)
-        +sacar_ficha(color, origen)
-    }
-
-    class Dice {
-        <<Core Model>>
-        -list __movimientos__
-        +tirar_dados()
-        +usar_dado(valor)
-    }
-
-    class Player {
-        <<Core Model>>
-        -str __nombre__
-        -int __fichas_restantes__
-        +ganar()
-        +restar_ficha()
-    }
-
-    ' --- Relaciones ---
-    main_pygame "1" *-- "1" BackgammonGame : crea
-    main_pygame "1" *-- "1" TableroGrafico : crea
-
-    cli "1" *-- "1" BackgammonGame : crea
-
-    BackgammonGame "1" *-- "1" Board : tiene
-    BackgammonGame "1" *-- "1" Dice : tiene
-    BackgammonGame "1" *-- "2" Player : tiene
-```
+computacion-2025-backgammon-UMFran/
+├── core/                 # Lógica central del juego
+│   ├── backgammongame.py # Controlador principal (motor)
+│   ├── board.py         # Lógica del tablero
+│   ├── player.py        # Clase jugador
+│   ├── dice.py          # Manejo de dados
+│   └── checker.py       # Clase ficha
+│
+├── cli/                 # Interfaz de línea de comandos
+│   └── cli.py           # Implementación CLI
+│
+├── pygame_ui/           # Interfaz gráfica
+│   ├── main_pygame.py   # Punto de entrada GUI (bucle principal)
+│   ├── interfaz_tablero.py # Renderizado del tablero y UI
+│   └── constantes.py    # Constantes (colores, fuentes, tamaños)
+│
+├── tests/               # Pruebas unitarias
+│   ├── test_board.py
+│   ├── test_game.py
+│   ├── test_dice.py
+│   ├── test_player.py
+│   ├── test_checker.py
+│   └── test_cli.py
+│
+├── .github/workflows/   # Integración Continua
+│   └── ci.yml
+│
+├── README.md            # Documentación principal (este archivo)
+├── CHANGELOG.md         # Historial de cambios
+├── JUSTIFICACION.md     # Justificación de diseño
+├── requirements.txt     # Dependencias
+└── .pylintrc            # Configuración de Pylint
 
 -----
 
