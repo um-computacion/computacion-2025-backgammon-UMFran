@@ -12,46 +12,33 @@ class Board:
     barra (banco) y zona final (home).
     """
     def __init__(self):
-        """Inicializa el tablero con la configuración estándar de fichas."""
-        self.__casillas__: list[list] = [
-            ['white', 'white'],  # 0
-            [],  # 1
-            [],  # 2
-            [],  # 3
-            [],  # 4
-            ['black', 'black', 'black', 'black', 'black'],  # 5
-            # --------------------------------------------
-            [],  # 6
-            ['black', 'black', 'black'],  # 7
-            [],  # 8
-            [],  # 9
-            [],  # 10
-            ['white', 'white', 'white', 'white', 'white'],  # 11
-            # --------------------------------------------
-            ['black', 'black', 'black', 'black', 'black'],  # 12
-            [],  # 13
-            [],  # 14
-            [],  # 15
-            ['white', 'white', 'white'],  # 16
-            [],  # 17
-            # --------------------------------------------
-            ['white', 'white', 'white', 'white', 'white'],  # 18
-            [],  # 19
-            [],  # 20
-            [],  # 21
-            [],  # 22
-            ['black', 'black'],  # 23
-        ]  # Tablero general de 24 casillas
+        """Inicializa el tablero con las posiciones iniciales del Backgammon."""
+        # Contenedor principal: lista de 24 puntos
+        self.__contenedor__ = [[] for _ in range(24)]
 
-        # Lugar donde guardamos las fichas comidas
-        self.__banco__ = {"white": [], "black": []}
+        # --- Configuración con tus colores "white" y "black" ---
+        # Jugador "white" (mueve 0 -> 23)
+        self.__contenedor__[0] = ["white"] * 2
+        self.__contenedor__[11] = ["white"] * 5
+        self.__contenedor__[16] = ["white"] * 3
+        self.__contenedor__[18] = ["white"] * 5
 
-        # Lugar donde guardamos las fichas al finalizar el juego
-        self.__home__ = {"white": [], "black": []}
+        # Jugador "black" (mueve 23 -> 0)
+        self.__contenedor__[23] = ["black"] * 2
+        self.__contenedor__[12] = ["black"] * 5
+        self.__contenedor__[7] = ["black"] * 3
+        self.__contenedor__[5] = ["black"] * 5
+        # --- Fin de la configuración ---
+
+        # Diccionario para fichas capturadas (en la barra)
+        self.__barra__ = {"white": [], "black": []}
+
+        # Diccionario para fichas que ya salieron del tablero
+        self.__afuera__ = {"white": [], "black": []}
 
     def mostrar_tablero(self):
         """Devuelve la lista de listas que representa las casillas."""
-        return self.__casillas__
+        return self.__contenedor__
 
     def remover_checker(self, punto: int):
         """
@@ -60,9 +47,9 @@ class Board:
         """
         if not 0 <= punto <= 23:
             raise ValueError("punto inválido")
-        if not self.__casillas__[punto]:
+        if not self.__contenedor__[punto]:
             raise ValueError("No hay ficha en esta casilla")
-        return self.__casillas__[punto].pop()
+        return self.__contenedor__[punto].pop()
 
     def mover_checker(self, origen: int, destino: int):
         """
@@ -70,15 +57,15 @@ class Board:
         Valida que el destino no esté bloqueado.
         Come fichas enemigas si es un 'blot'.
         """
-        if not self.__casillas__[origen]:
+        if not self.__contenedor__[origen]:
             raise ValueError("No hay ficha en esta casilla")
 
-        ficha_color = self.__casillas__[origen][-1]
+        ficha_color = self.__contenedor__[origen][-1]
 
         if not 0 <= destino <= 23:
             raise ValueError("Punto inválido")
 
-        casilla_destino = self.__casillas__[destino]
+        casilla_destino = self.__contenedor__[destino]
         if casilla_destino:
             color_destino = casilla_destino[0]
             cantidad_destino = len(casilla_destino)
@@ -92,28 +79,30 @@ class Board:
 
         if casilla_destino and casilla_destino[0] != ficha:
             # Es un 'blot' (una sola ficha).
-            enemigo = self.__casillas__[destino].pop()
-            self.__banco__[enemigo].append(enemigo)
+            enemigo = self.__contenedor__[destino].pop()
+            self.__barra__[enemigo].append(enemigo)
 
-        return self.__casillas__[destino].append(ficha)
+        return self.__contenedor__[destino].append(ficha)
 
     def move_checker_banco(self, color: str, destino: int):
         """
         Mueve una ficha desde el banco (barra) al destino.
         Valida la zona de reingreso y que no esté bloqueado.
         """
-        if not self.__banco__[color]:
+        if not self.__barra__[color]:
             raise ValueError("No hay fichas en el banco")
 
-        ficha_color = self.__banco__[color][0]
+        ficha_color = self.__barra__[color][0]
 
+        # "white" (antes Negra) reingresa en 0-5
         if ficha_color == "white" and not 0 <= destino <= 5:
             raise ValueError("Fichas blancas sólo reingresan en casillas 0-5")
 
+        # "black" (antes Blanca) reingresa en 18-23
         if ficha_color == "black" and not 18 <= destino <= 23:
             raise ValueError("Fichas negras sólo reingresan en casillas 18-23")
 
-        casilla_destino = self.__casillas__[destino]
+        casilla_destino = self.__contenedor__[destino]
         if casilla_destino:
             color_destino = casilla_destino[0]
             cantidad_destino = len(casilla_destino)
@@ -123,22 +112,23 @@ class Board:
                     "Punto inválido, hay más de 1 ficha de otro color"
                 )
 
-        ficha = self.__banco__[color].pop()
+        ficha = self.__barra__[color].pop()
 
         if casilla_destino and casilla_destino[0] != ficha:
-            enemigo = self.__casillas__[destino].pop()
-            self.__banco__[enemigo].append(enemigo)
+            enemigo = self.__contenedor__[destino].pop()
+            self.__barra__[enemigo].append(enemigo)
 
-        return self.__casillas__[destino].append(ficha)
+        return self.__contenedor__[destino].append(ficha)
 
     def sacar_ficha(self, color: str, origen: int):
         """
-        Mueve una ficha del origen a la zona 'home' (sacar del juego).
+        Mueve una ficha del origen a la zona 'afuera' (sacar del juego).
         Devuelve True si tuvo éxito, False si no.
         """
-        if self.__casillas__[origen] and self.__casillas__[origen][-1] == color:
-            ficha = self.__casillas__[origen].pop()
-            self.__home__[color].append(ficha)
+        if self.__contenedor__[origen] and \
+           self.__contenedor__[origen][-1] == color:
+            ficha = self.__contenedor__[origen].pop()
+            self.__afuera__[color].append(ficha)
             return True
         return False
 
@@ -147,10 +137,9 @@ class Board:
         Devuelve el estado de una casilla (color y cantidad).
         Devuelve (None, 0) si está vacía.
         """
-        if not self.__casillas__[punto]:  # En caso que no haya ninguna ficha
+        if not self.__contenedor__[punto]:
             return None, 0
-        # Nos devuelve el estado de la casilla
-        casilla = self.__casillas__[punto]
+        casilla = self.__contenedor__[punto]
         msg = (
             f"En la posición {casilla} hay {len(casilla)} "
             f"del color {casilla[0]}"
@@ -160,25 +149,25 @@ class Board:
     def estado_jugador(self, color: str):
         """
         Devuelve un resumen del estado de todas las fichas de un jugador
-        (en tablero, en home, en banco).
+        (en tablero, en afuera, en barra).
         """
         en_tablero = sum(
-            1 for punto in self.__casillas__ for ficha in punto
+            1 for punto in self.__contenedor__ for ficha in punto
             if ficha == color
         )
-        en_home = len(self.__home__[color])
-        en_banco = len(self.__banco__[color])
+        en_afuera = len(self.__afuera__[color])
+        en_barra = len(self.__barra__[color])
 
         msg = (
             f"Fichas de {color}: {en_tablero} en el tablero, "
-            f"{en_home} guardadas, {en_banco} comidas sin sacar"
+            f"{en_afuera} guardadas, {en_barra} comidas sin sacar"
         )
         return {msg}
 
-    def get_banco(self, color: str):
+    def get_barra(self, color: str):
         """Devuelve una copia de la lista de fichas en el banco."""
-        return list(self.__banco__[color])
+        return list(self.__barra__[color])
 
-    def get_home(self, color: str):
+    def get_afuera(self, color: str):
         """Devuelve una copia de la lista de fichas en el home."""
-        return list(self.__home__[color])
+        return list(self.__afuera__[color])

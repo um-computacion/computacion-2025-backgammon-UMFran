@@ -9,7 +9,6 @@ from core.dice import Dice
 from core.player import Player
 
 
-# pylint: disable=too-many-instance-attributes
 class BackgammonGame:
     """
     Clase principal que gestiona la lógica y el estado del juego Backgammon.
@@ -28,7 +27,10 @@ class BackgammonGame:
         """Inicializa el juego creando el tablero, dados y jugadores."""
         self.__board__ = Board()
         self.__dados__ = Dice()
+        # --- Asignar "white" y "black" según la nueva lógica del tablero ---
+        # "white" (antes "Negra") se mueve 0 -> 23
         self.__jugador1__ = Player(jugador1, "white")
+        # "black" (antes "Blanca") se mueve 23 -> 0
         self.__jugador2__ = Player(jugador2, "black")
         self.__jugadores__ = {self.__jugador1__, self.__jugador2__}
         self.__turno__ = self.__jugador1__
@@ -66,10 +68,13 @@ class BackgammonGame:
         Valida la dirección, el dado y llama al tablero.
         """
         color = self.__turno__.obtener_color()
+        # --- Lógica de dirección invertida ---
+        # "white" (antes Negra) se mueve 0 -> 23 (destino > origen)
         if color == "white" and destino <= origen:
-            raise ValueError("Movimiento inválido (blancas solo avanzan)")
+            raise ValueError("Movimiento inválido (fichas 'white' solo avanzan)")
+        # "black" (antes Blanca) se mueve 23 -> 0 (destino < origen)
         if color == "black" and destino >= origen:
-            raise ValueError("Movimiento inválido (negras solo retroceden)")
+            raise ValueError("Movimiento inválido (fichas 'black' solo retroceden)")
 
         movimiento = abs(destino - origen)
         if movimiento not in self.__dados__.__movimientos__:
@@ -87,7 +92,14 @@ class BackgammonGame:
         Valida el dado y llama al tablero.
         """
         color = self.__turno__.obtener_color()
-        movimiento = destino + 1 if color == "white" else 24 - destino
+        
+        # --- Lógica de dado invertida ---
+        # "white" (antes Negra) reingresa en 0-5. Dado 1 -> destino 0.
+        if color == "white":
+            movimiento = destino + 1
+        # "black" (antes Blanca) reingresa en 18-23. Dado 1 -> destino 23.
+        else:  # black
+            movimiento = 24 - destino
 
         if movimiento not in self.__dados__.__movimientos__:
             raise ValueError(
@@ -109,12 +121,15 @@ class BackgammonGame:
         tablero_actual = self.__board__.mostrar_tablero()
         dados_actuales = self.__dados__.get_dados()
 
+        # --- Lógica de cuadrante invertida ---
         if color == "white":
+            # "white" (antes Negra) saca de 18-23
             fichas_fuera_cuadrante = any(
                 color in punto for i, punto in enumerate(tablero_actual)
                 if i < 18
             )
         else:  # black
+            # "black" (antes Blanca) saca de 0-5
             fichas_fuera_cuadrante = any(
                 color in punto for i, punto in enumerate(tablero_actual)
                 if i > 5
@@ -124,7 +139,11 @@ class BackgammonGame:
             msg = "No puedes sacar: aún tienes fichas fuera del cuadrante final"
             raise ValueError(msg)
 
+        # --- Lógica de dado invertida ---
+        # "white" (antes Negra) saca de 18-23. Ficha en 23 necesita 1 (24-23).
         movimiento_exacto = (24 - origen) if color == "white" else (origen + 1)
+        # "black" (antes Blanca) saca de 0-5. Ficha en 0 necesita 1 (0+1).
+
         dado_a_usar = None
 
         if movimiento_exacto in dados_actuales:
@@ -135,14 +154,15 @@ class BackgammonGame:
             ]
             if dados_mayores_disponibles:
                 es_la_mas_lejana = True
+                # --- Lógica de "más lejana" invertida ---
                 if color == "white":
-                    # Chequear casillas 18 a origen-1
+                    # "white" (antes Negra): más lejana es la de índice menor (ej. 18)
                     for i in range(18, origen):
                         if "white" in tablero_actual[i]:
                             es_la_mas_lejana = False
                             break
                 else:  # black
-                    # Chequear casillas origen+1 a 5
+                    # "black" (antes Blanca): más lejana es la de índice mayor (ej. 5)
                     for i in range(origen + 1, 6):
                         if "black" in tablero_actual[i]:
                             es_la_mas_lejana = False
@@ -222,15 +242,21 @@ class BackgammonGame:
         valid_destinos = []
         color = self.__turno__.obtener_color()
         tablero = self.__board__.mostrar_tablero()
-        banco_propio = self.__board__.get_banco(color)
+        # --- Usar get_barra ---
+        banco_propio = self.__board__.get_barra(color)
 
         if origen == 'bar':
             if not banco_propio:
                 return []
             for dado in dados:
-                destino = (dado - 1) if color == "white" else (24 - dado)
-                zona_valida = (0 <= destino <= 5) if color == "white" \
-                    else (18 <= destino <= 23)
+                # --- Lógica de reingreso invertida ---
+                if color == "white": # "white" (antes Negra)
+                    destino = dado - 1 # Dado 1 va a casilla 0
+                    zona_valida = 0 <= destino <= 5
+                else: # "black" (antes Blanca)
+                    destino = 24 - dado # Dado 1 va a casilla 23
+                    zona_valida = 18 <= destino <= 23
+
                 if not zona_valida:
                     continue
                 casilla_destino = tablero[destino]
@@ -244,8 +270,12 @@ class BackgammonGame:
             if not tablero[origen] or tablero[origen][0] != color:
                 return []
             for dado in dados:
-                destino = (origen + dado) if color == "white" \
-                    else (origen - dado)
+                # ---Lógica de movimiento invertida ---
+                if color == "white": # "white" (antes Negra)
+                    destino = origen + dado
+                else: # "black" (antes Blanca)
+                    destino = origen - dado
+
                 if not 0 <= destino <= 23:
                     continue
                 casilla_destino = tablero[destino]

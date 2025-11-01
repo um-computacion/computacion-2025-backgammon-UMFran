@@ -12,6 +12,13 @@ from core.backgammongame import BackgammonGame
 from pygame_ui.interfaz_tablero import TableroGrafico
 from pygame_ui import constantes as C
 
+# --- Deshabilitar reglas de Pylint para esta función ---
+# R0914: Too many local variables
+# R0912: Too many branches
+# R0915: Too many statements
+# R1702: Too many nested blocks
+# pylint: disable=R0914, R0912, R0915, R1702
+
 
 def main():
     """Función principal que ejecuta el bucle del juego."""
@@ -41,8 +48,6 @@ def main():
     input_activo = 1  # 1=P1, 2=P2
 
     # --- 5. Bucle Principal ---
-    # pylint: disable=too-many-locals, too-many-branches, too-many-statements
-    # pylint: disable=too-many-nested-blocks
     while running:
         # --- 6. Manejo de Eventos ---
         for event in pygame.event.get():
@@ -87,7 +92,8 @@ def main():
                     if boton_clicado == "ROLL_DICE":
                         dados_disponibles = game.tirar_dados()
                         color_temp = turno_actual_player.obtener_color()
-                        banco_temp = game.__board__.get_banco(color_temp)
+                        # --- Usar get_barra ---
+                        banco_temp = game.__board__.get_barra(color_temp)
                         hay_movimiento = False
                         origen_temporal = 'bar' if banco_temp else None
                         if origen_temporal:
@@ -106,11 +112,13 @@ def main():
                                     if moves:
                                         hay_movimiento = True
                                         break
+                                    # --- Lógica de cuadrante invertida ---
                                     in_home = (
                                         (color_temp == "white" and i >= 18) or
                                         (color_temp == "black" and i <= 5)
                                     )
                                     if in_home:
+                                        # ---  Lógica de dado invertida ---
                                         m_exacto = (24 - i) if \
                                             color_temp == "white" \
                                             else (i + 1)
@@ -147,7 +155,8 @@ def main():
                         continue
 
                     color_actual = turno_actual_player.obtener_color()
-                    banco_actual = game.__board__.get_banco(color_actual)
+                    # --- Usar get_barra ---
+                    banco_actual = game.__board__.get_barra(color_actual)
 
                     # --- Lógica de Clics y Movimientos ---
                     if origen_seleccionado == 'bar':
@@ -177,6 +186,7 @@ def main():
                             finally:
                                 origen_seleccionado = None
                                 posibles_destinos = []
+                        # --- Lógica de home invertida ---
                         elif ((color_actual == 'white' and
                                casilla_clicada == 'home_white') or
                               (color_actual == 'black' and
@@ -208,6 +218,7 @@ def main():
                                     mensaje_error = "Debes reingresar primero"
                                 else:
                                     try:
+                                        # --- Lógica de cuadrante invertida ---
                                         in_home_board = (
                                             (color_actual == "white" and
                                              casilla_clicada >= 18) or
@@ -216,6 +227,7 @@ def main():
                                         )
                                         if in_home_board:
                                             todas_en_cuadrante = True
+                                            # --- Lógica de rango invertida ---
                                             rango_check = range(18) if \
                                                 color_actual == "white" \
                                                 else range(6, 24)
@@ -226,6 +238,7 @@ def main():
                                                     break
                                             if todas_en_cuadrante and \
                                                game_state == "MAKE_MOVE":
+                                                # --- Lógica de dado invertida ---
                                                 m_exacto = (24 - casilla_clicada) \
                                                     if color_actual == "white" \
                                                     else (casilla_clicada + 1)
@@ -240,6 +253,7 @@ def main():
                                                     )
                                                     if d_mayores:
                                                         es_mas_lejana = True
+                                                        # --- Lógica "más lejana" invertida ---
                                                         r_lejana = range(
                                                             18, casilla_clicada
                                                         ) if color_actual == "white" \
@@ -279,6 +293,7 @@ def main():
                                 puede_sacar_aqui = False
                                 if isinstance(origen_seleccionado, int):
                                     try:
+                                        # --- Lógica de cuadrante invertida ---
                                         in_home = (
                                             (color_actual == "white" and
                                              origen_seleccionado >= 18) or
@@ -296,6 +311,7 @@ def main():
                                                     todas_home = False
                                                     break
                                             if todas_home:
+                                                # --- Lógica de dado invertida ---
                                                 m_s = (24 - origen_seleccionado) \
                                                     if color_actual == "white" \
                                                     else (origen_seleccionado + 1)
@@ -309,6 +325,7 @@ def main():
                                                     )
                                                     if d_may:
                                                         es_lej = True
+                                                        # --- Lógica "más lejana" invertida ---
                                                         r_lej = range(
                                                             18, origen_seleccionado
                                                         ) if color_actual == "white" \
@@ -348,16 +365,18 @@ def main():
             interfaz.dibujar_menu(nombre_p1, nombre_p2, input_activo)
         else:
             interfaz.dibujar_tablero()  # Dibuja barras, home y triángulos
-            banco_w = game.__board__.get_banco("white")
-            banco_b = game.__board__.get_banco("black")
-            home_w = game.__board__.get_home("white")
-            home_b = game.__board__.get_home("black")
+            # --- Usar get_barra y get_afuera ---
+            banco_w = game.__board__.get_barra("white")
+            banco_b = game.__board__.get_barra("black")
+            home_w = game.__board__.get_afuera("white")
+            home_b = game.__board__.get_afuera("black")
             interfaz.dibujar_fichas(
                 game.mostrar_tablero(), banco_w, banco_b
             )
+            nombre_turno = turno_actual_player.obtener_nombre() if \
+                turno_actual_player else '...'
             interfaz.dibujar_ui(
-                turno_actual_player.obtener_color() if
-                turno_actual_player else 'white',
+                nombre_turno,
                 dados_disponibles, game_state, mensaje_error,
                 origen_seleccionado, posibles_destinos,
                 len(banco_w), len(banco_b), len(home_w), len(home_b)

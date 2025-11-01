@@ -4,6 +4,7 @@ Módulo de Constantes para la UI de Pygame.
 Almacena todos los valores fijos (tamaños, colores, fuentes, posiciones)
 para mantener el código de la interfaz limpio y fácil de modificar.
 """
+# pylint: disable=no-member
 import pygame
 
 pygame.font.init()
@@ -28,9 +29,9 @@ RADIO_FICHA = (ANCHO_TRIANGULO // 2) - 4
 MAX_FICHAS_APILADAS = 5
 
 # --- COLORES ---
-COLOR_FONDO_PRINCIPAL = (101, 67, 33)  # Marrón Roble Oscuro
+COLOR_FONDO_PRINCIPAL = (196, 164, 132)  # Marrón Roble Oscuro
 
-COLOR_TRIANGULO_1 = (139, 69, 19)   # Marrón Cuero
+COLOR_TRIANGULO_1 = (139, 69, 19)   # Marrón claro
 COLOR_TRIANGULO_2 = (234, 235, 200)  # Crema
 COLOR_BARRA_Y_HOME = (101, 67, 33)   # Marrón Roble Oscuro
 
@@ -59,6 +60,8 @@ FONT_MENU_TITULO = pygame.font.SysFont('Arial', 40, bold=True)
 FONT_INPUT = pygame.font.SysFont('Arial', 24)
 FONT_INFO_BAR = pygame.font.SysFont('Arial', 18)
 FONT_COUNTER = pygame.font.SysFont('Arial', 14, bold=True)
+# --- CONSTANTE QUE FALTABA ---
+FONT_ERROR_CENTRAL = pygame.font.SysFont('Arial', 16, bold=True)
 
 
 # --- ZONAS DE CLIC ---
