@@ -89,7 +89,6 @@ computacion-2025-backgammon-UMFran/
 ├── JUSTIFICACION.md     # Justificación de diseño
 ├── requirements.txt     # Dependencias
 └── .pylintrc            # Configuración de Pylint
-
 -----
 
 ## Requerimientos
