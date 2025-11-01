@@ -27,36 +27,9 @@ El motor del juego maneja todas las reglas clásicas del Backgammon:
 
 El proyecto está diseñado siguiendo los principios de la Programación Orientada a Objetos, con una clara **separación entre la lógica de negocio y la presentación (UI)**.
 
-### `core/` - El Cerebro del Juego
+### Estructura del Proyecto
 
-Este directorio contiene toda la lógica pura del Backgammon, sin ninguna dependencia gráfica o de consola.
-
-  * **`backgammongame.py`**: Es el motor principal. Conecta a los jugadores, el tablero y los dados, y aplica las reglas del juego (validar movimientos, cambiar turnos, etc.).
-  * **`board.py`**: Representa el estado físico del tablero. Sabe dónde está cada ficha, cómo moverlas entre casillas, cómo gestionar la barra (fichas comidas) y la casa (fichas sacadas).
-  * **`player.py`**: Almacena la información del jugador (nombre, color) y lleva la cuenta de cuántas fichas le quedan por sacar para determinar al ganador.
-  * **`dice.py`**: Gestiona la lógica de tirar los dados, manejar dobles y llevar la cuenta de los dados usados en un turno.
-  * **`checker.py`**: Una clase simple que representa una ficha individual.
-
-### `pygame_ui/` - La Interfaz Gráfica (Pygame)
-
-Este paquete se encarga de todo lo visual y la interacción con el mouse.
-
-  * **`main_pygame.py`**: Es el punto de entrada que se ejecuta. Contiene el bucle principal del juego, gestiona los eventos de Pygame (clics, teclado) y coordina la lógica del `core` con el dibujado en pantalla.
-  * **`interfaz_tablero.py`**: Contiene la clase `TableroGrafico`, que sabe cómo dibujar cada elemento (el tablero, las barras, los triángulos, las fichas, los contadores "+n", los resaltados de movimientos válidos, el menú y la barra de información inferior).
-  * **`constantes.py`**: Almacena todos los valores fijos (tamaños de pantalla, colores, fuentes, posiciones de botones) para mantener el código limpio y fácil de modificar.
-
-### `cli/` - La Interfaz de Consola
-
-  * **`cli.py`**: Una interfaz alternativa que permite jugar al juego completo directamente en la terminal, usando comandos de texto.
-
-### `tests/` - Control de Calidad
-
-  * Contiene todas las pruebas unitarias que validan el funcionamiento del `core/`. Las pruebas usan `unittest` y `mocking` (especialmente `@patch`) para simular tiradas de dados y asegurar que la lógica del juego es correcta.
-
------
-
-## Diagrama de Clases referente al proyecto
-
+```
 computacion-2025-backgammon-UMFran/
 ├── core/                 # Lógica central del juego
 │   ├── backgammongame.py # Controlador principal (motor)
@@ -89,6 +62,34 @@ computacion-2025-backgammon-UMFran/
 ├── JUSTIFICACION.md     # Justificación de diseño
 ├── requirements.txt     # Dependencias
 └── .pylintrc            # Configuración de Pylint
+```
+
+### `core/` - El Cerebro del Juego
+
+Este directorio contiene toda la lógica pura del Backgammon, sin ninguna dependencia gráfica o de consola.
+
+  * **`backgammongame.py`**: Es el motor principal. Conecta a los jugadores, el tablero y los dados, y aplica las reglas del juego (validar movimientos, cambiar turnos, etc.).
+  * **`board.py`**: Representa el estado físico del tablero. Sabe dónde está cada ficha, cómo moverlas entre casillas, cómo gestionar la barra (fichas comidas) y la casa (fichas sacadas).
+  * **`player.py`**: Almacena la información del jugador (nombre, color) y lleva la cuenta de cuántas fichas le quedan por sacar para determinar al ganador.
+  * **`dice.py`**: Gestiona la lógica de tirar los dados, manejar dobles y llevar la cuenta de los dados usados en un turno.
+  * **`checker.py`**: Una clase simple que representa una ficha individual.
+
+### `pygame_ui/` - La Interfaz Gráfica (Pygame)
+
+Este paquete se encarga de todo lo visual y la interacción con el mouse.
+
+  * **`main_pygame.py`**: Es el punto de entrada que se ejecuta. Contiene el bucle principal del juego, gestiona los eventos de Pygame (clics, teclado) y coordina la lógica del `core` con el dibujado en pantalla.
+  * **`interfaz_tablero.py`**: Contiene la clase `TableroGrafico`, que sabe cómo dibujar cada elemento (el tablero, las barras, los triángulos, las fichas, los contadores "+n", los resaltados de movimientos válidos, el menú y la barra de información inferior).
+  * **`constantes.py`**: Almacena todos los valores fijos (tamaños de pantalla, colores, fuentes, posiciones de botones) para mantener el código limpio y fácil de modificar.
+
+### `cli/` - La Interfaz de Consola
+
+  * **`cli.py`**: Una interfaz alternativa que permite jugar al juego completo directamente en la terminal, usando comandos de texto.
+
+### `tests/` - Control de Calidad
+
+  * Contiene todas las pruebas unitarias que validan el funcionamiento del `core/`. Las pruebas usan `unittest` y `mocking` (especialmente `@patch`) para simular tiradas de dados y asegurar que la lógica del juego es correcta.
+
 -----
 
 ## Requerimientos
