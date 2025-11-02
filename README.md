@@ -215,8 +215,9 @@ Una versión más simple que se ejecuta en su terminal.
 
 **Ejecución:**
 
-```sh
-python cli/cli.py
+```
+Powershell: 
+  python -m cli.cli
 ```
 
 **Controles:**
@@ -234,16 +235,18 @@ El proyecto incluye un conjunto de pruebas unitarias en el directorio `tests/` p
 
 **Ejecutar todas las pruebas:**
 
-```sh
-python -m unittest discover
+```
+Powershell:
+  python -m unittest discover
 ```
 
 **Generar reporte de cobertura:**
 El archivo `ci.yml` está configurado para correr las pruebas y generar un reporte de cobertura.
 
-```sh
-coverage run -m unittest discover
-coverage report -m
+```
+CMD: (HABIENDO ACTIVADO EL ENTORNO VIRTUAL PREVIAMENTE)
+  coverage run -m unittest discover
+  coverage report -m
 ```
 
 ## Desarrollo
@@ -252,6 +255,7 @@ Este proyecto usa `pylint` para el control de calidad y el formateo del código,
 
 **Ejecutar Pylint:**
 
-```sh
-pylint --rcfile=.pylintrc core cli pygame_ui
+```
+CMD: (HABIENDO ACTIVADO EL ENTORNO VIRTUAL PREVIAMENTE)
+  pylint --rcfile=.pylintrc core cli pygame_ui
 ```
