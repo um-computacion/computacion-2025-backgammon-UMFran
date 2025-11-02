@@ -194,8 +194,9 @@ Es la experiencia de juego recomendada.
 **Ejecución:**
 Corra el siguiente comando desde la raíz del proyecto:
 
-```sh
-python pygame_ui/main_pygame.py
+```
+Powershell:
+  python -m pygame_ui.main_pygame
 ```
 
 **Controles:**
